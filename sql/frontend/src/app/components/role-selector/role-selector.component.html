@@ -1,0 +1,18 @@
+<div class="role-selector">
+  <div class="role-header">
+    <span class="role-label">Your Role:</span>
+  </div>
+  <div class="role-buttons">
+    <button
+      *ngFor="let roleInfo of availableRoles"
+      class="role-button"
+      [class.active]="currentRole === roleInfo.role"
+      [style.--role-color]="roleInfo.color"
+      (click)="selectRole(roleInfo.role)"
+      [title]="roleInfo.description"
+    >
+      <span class="role-name">{{ roleInfo.displayName }}</span>
+      <span class="role-desc">{{ roleInfo.description }}</span>
+    </button>
+  </div>
+</div>

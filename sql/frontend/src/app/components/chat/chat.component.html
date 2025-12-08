@@ -1,0 +1,76 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <div class="header-title">
+      <h1>Chronicle Query Assistant</h1>
+      <p>Ask questions in plain English</p>
+    </div>
+    <div class="header-actions">
+      <button
+        class="action-button"
+        (click)="toggleExamples()"
+        title="Toggle examples"
+      >
+        {{ showExamples ? "📋" : "💡" }}
+      </button>
+      <button class="action-button" (click)="clearChat()" title="Clear chat">
+        🗑️
+      </button>
+    </div>
+  </div>
+
+  <!-- Examples Panel -->
+  <div *ngIf="showExamples && examples.length > 0" class="examples-panel">
+    <h3>Example Queries</h3>
+    <div class="examples-grid">
+      <div *ngFor="let category of examples" class="example-category">
+        <h4>{{ category.category }}</h4>
+        <div class="example-queries">
+          <button
+            *ngFor="let query of category.queries"
+            class="example-query"
+            (click)="useExample(query)"
+          >
+            {{ query }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages-container" #messagesContainer>
+    <app-message
+      *ngFor="let message of messages"
+      [message]="message"
+    ></app-message>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-indicator">
+      <div class="loading-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <p>Processing your query...</p>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="input-container">
+    <textarea
+      [(ngModel)]="currentQuestion"
+      (keydown.enter)="onEnterKey($any($event))"
+      placeholder="Ask a question (e.g., 'Show me all available plots in section A')"
+      rows="2"
+      [disabled]="isLoading"
+    ></textarea>
+    <button
+      class="send-button"
+      (click)="sendMessage()"
+      [disabled]="!currentQuestion.trim() || isLoading"
+    >
+      <span class="send-icon">📤</span>
+      Send
+    </button>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<div class="table-container">
+  <div *ngIf="data.rowCount === 0" class="empty-state">
+    <p>No results found</p>
+  </div>
+
+  <div *ngIf="data.rowCount > 0" class="table-wrapper">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th *ngFor="let column of data.columns">
+            {{ formatColumnName(column) }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let row of data.rows; let i = index"
+          [class.even]="i % 2 === 0"
+        >
+          <td *ngFor="let column of data.columns">
+            {{ formatValue(row[column]) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="data.rowCount > 0" class="table-footer">
+    <span>{{ data.rowCount }} {{ data.rowCount === 1 ? "row" : "rows" }}</span>
+  </div>
+</div>

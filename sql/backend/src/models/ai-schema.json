@@ -1,0 +1,2024 @@
+{
+  "cemeteries_cemetery": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "database": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "location": {
+      "type": "point",
+      "key": "MUL",
+      "nullable": false,
+      "comment": ""
+    },
+    "description": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "bounds": {
+      "type": "polygon",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "unique_name": {
+      "type": "varchar",
+      "key": "UNI",
+      "nullable": false,
+      "comment": ""
+    },
+    "ortho_layer": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "working_hours": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "web_site": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "archive_date": {
+      "type": "date",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "archived": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "deleted": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "status": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "verified": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "maintenance": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "last_generated_interment_number": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "sell_story": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_locked": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "database_location": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "fee_currency": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "fee_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "fee_value": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "organization_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "story_product_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "seo_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "seo_status": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    }
+  },
+  "cemeteries_section": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "polygon": {
+      "type": "polygon",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cemetery_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": false,
+      "comment": ""
+    },
+    "background": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "rotate_degree": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "section_order": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "bottom": {
+      "type": "int",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "left": {
+      "type": "int",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "right": {
+      "type": "int",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "top": {
+      "type": "int",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    }
+  },
+  "cemeteries_lot": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "polygon": {
+      "type": "polygon",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "background": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "rotate_degree": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cemetery_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": false,
+      "comment": ""
+    },
+    "lot_order": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_plot": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "external_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "plot_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "section": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "row": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "plot_no": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "status": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "cemetery_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": false,
+      "comment": ""
+    },
+    "length": {
+      "type": "double",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "width": {
+      "type": "double",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "total_capacity": {
+      "type": "int",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "inscription": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "section_link_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "burials_capacity": {
+      "type": "int",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "cremation_capacity": {
+      "type": "int",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "direction": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "note": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "plot_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "entombment_capacity": {
+      "type": "int",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "highlight_story": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "sell_story": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "price": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "custom_fields": {
+      "type": "json",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "show_price": {
+      "type": "smallint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "memorial_capacity": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "lot_link_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "lot": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "deleted_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_deleted": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "unique_id": {
+      "type": "varchar",
+      "key": "UNI",
+      "nullable": true,
+      "comment": ""
+    },
+    "sync_with_osiris": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "is_processing_edit": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "last_edit_user_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "processing_session_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "virtual_tour_deep_url": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_person": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "gender": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "title": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "first_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "middle_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "last_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "external_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "notes": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cem_unique_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_applicant": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "is_holder": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "deleted_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_deleted": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "unique_id": {
+      "type": "varchar",
+      "key": "UNI",
+      "nullable": true,
+      "comment": ""
+    },
+    "sync_with_osiris": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "contact_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "payment_gateway_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_intermentrecord": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "external_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "interment_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "interment_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "date_of_birth": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "date_of_death": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "age": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "returned_serviceman": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cause_of_death": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "occupation": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "religion": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "headstone": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "comment": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "funeral_director_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "interment_minister_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "person_id": {
+      "type": "int",
+      "key": "UNI",
+      "nullable": true,
+      "comment": ""
+    },
+    "plot_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "interment_depth": {
+      "type": "double",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "applicant_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "container_dimensions": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "container_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cremation_location": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "interment_number": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "custom_date_of_birth": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "custom_date_of_death": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "custom_interment_date": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "also_for": {
+      "type": "json",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "custom_fields": {
+      "type": "json",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "other_religion": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "unique_id": {
+      "type": "varchar",
+      "key": "UNI",
+      "nullable": true,
+      "comment": ""
+    },
+    "returned_serviceman_badge": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "interment_depth_unit": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_intermentstory": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "text": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cemetery_unique_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "interment_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_featured": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "approval_step": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "approval_user_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "approved_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "created_user_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "rejected_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "rejected_reason": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "relationship_interment": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "status_story": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "title": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_admin": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "external_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "story_code": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "amplitude_user_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "unique_id": {
+      "type": "varchar",
+      "key": "UNI",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_applicationrecord": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "external_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "application_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "right_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "term_of_right": {
+      "type": "json",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "note": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "applicant_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "plot_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": false,
+      "comment": ""
+    },
+    "payment_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "fee": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "fee_paid": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "certificate_number": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "service_need": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "expiry_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "add_to_event_calendar": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "custom_fields": {
+      "type": "json",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "invoice_id": {
+      "type": "int",
+      "key": "UNI",
+      "nullable": true,
+      "comment": ""
+    },
+    "unique_id": {
+      "type": "varchar",
+      "key": "UNI",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_plotpurchaser": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "purc_price": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "plot_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "event_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "billing_address": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "billing_city": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "billing_country": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "billing_phone_number": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "billing_postcode": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "billing_state": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "comments": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "email": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "first_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "last_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "mobile_phone": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "purchase_code": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "custom_form_value": {
+      "type": "json",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_old": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "temporary_event_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_business": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "business_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "business_code": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "comment": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "person_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "deleted_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_deleted": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "business_type_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_address": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "street": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "suburb": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "postcode": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "state": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "country": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cemetery_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "person_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "primary": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    }
+  },
+  "cemeteries_phone": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "phone_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "phone_number": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "cemetery_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "person_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_email": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "email": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "cemetery_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "person_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_attribute": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "application_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "certificate_number": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "right_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "term_of_right": {
+      "type": "json",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "fee": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "payment_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "fee_paid": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "service_need": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "person_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "notes": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_events": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "external_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "event_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "types": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "descriptions": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "make_public": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "cremation_location": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "end_time": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "repeating": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "repeat_until": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_completed": {
+      "type": "smallint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_deleted": {
+      "type": "smallint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "assigned_party_id": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "created_by_id": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "event_payment_id": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "event_purchaser_id": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "plot_id": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "responsible_person_id": {
+      "type": "int",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "location_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "start_time": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cemetery_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "section_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "related_interment_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "event_status_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "event_types_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "story_data_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "event_subtype_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_email_sent": {
+      "type": "smallint",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cover_image": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "unique_id": {
+      "type": "varchar",
+      "key": "UNI",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_personrelationship": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "relationship": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "form_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "interment_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "person_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "cemeteries_recordfile": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "file": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "file_path": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    }
+  },
+  "invoices_invoice": {
+    "id": {
+      "type": "int",
+      "key": "PRI",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "updated_at": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "external_id": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "invoice_number": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "invoice_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "due_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "currency": {
+      "type": "varchar",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "status": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "customer": {
+      "type": "json",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "integration_type": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "cemetery_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "discount": {
+      "type": "double",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "internal_status": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "notes": {
+      "type": "longtext",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "owner_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "reference": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_deleted": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "organization_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": false,
+      "comment": ""
+    },
+    "created_by_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "purchaser_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "issue_date": {
+      "type": "datetime",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "is_tax_enabled": {
+      "type": "tinyint",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "tax_application": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "tax_calculation": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "tax_name": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    },
+    "tax_rate": {
+      "type": "double",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "grand_total": {
+      "type": "double",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "subtotal": {
+      "type": "double",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "tax_amount": {
+      "type": "double",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "total_discount": {
+      "type": "double",
+      "key": "",
+      "nullable": false,
+      "comment": ""
+    },
+    "purchaser_person_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "sales_request_id": {
+      "type": "int",
+      "key": "MUL",
+      "nullable": true,
+      "comment": ""
+    },
+    "payment_token": {
+      "type": "char",
+      "key": "UNI",
+      "nullable": false,
+      "comment": ""
+    },
+    "currency_symbol": {
+      "type": "varchar",
+      "key": "",
+      "nullable": true,
+      "comment": ""
+    }
+  }
+}

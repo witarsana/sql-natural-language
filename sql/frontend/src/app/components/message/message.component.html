@@ -1,0 +1,61 @@
+<div
+  class="message"
+  [class.user-message]="message.type === 'user'"
+  [class.system-message]="message.type === 'system'"
+  [class.error-message]="message.type === 'error'"
+>
+  <div class="message-header">
+    <span class="message-type">
+      <span *ngIf="message.type === 'user'" class="icon">👤</span>
+      <span *ngIf="message.type === 'system'" class="icon">🤖</span>
+      <span *ngIf="message.type === 'error'" class="icon">⚠️</span>
+      {{
+        message.type === "user"
+          ? "You"
+          : message.type === "error"
+          ? "Error"
+          : "Chronicle AI"
+      }}
+    </span>
+    <span class="message-time">{{ formatTime(message.timestamp) }}</span>
+  </div>
+
+  <div class="message-content">
+    <p>{{ message.content }}</p>
+  </div>
+
+  <!-- Query Results -->
+  <div
+    *ngIf="message.data && message.type === 'system'"
+    class="message-results"
+  >
+    <app-table-result [data]="message.data"></app-table-result>
+  </div>
+
+  <!-- Metadata -->
+  <div
+    *ngIf="message.metadata && message.type === 'system'"
+    class="message-metadata"
+  >
+    <div class="metadata-row">
+      <span class="metadata-label">Execution time:</span>
+      <span class="metadata-value">{{
+        formatExecutionTime(message.metadata.executionTime)
+      }}</span>
+    </div>
+    <div class="metadata-row">
+      <span class="metadata-label">Rows returned:</span>
+      <span class="metadata-value">{{ message.data?.rowCount || 0 }}</span>
+    </div>
+    <div class="metadata-row">
+      <span class="metadata-label">Role:</span>
+      <span class="metadata-value role-badge">{{ message.metadata.role }}</span>
+    </div>
+    <button class="sql-toggle" (click)="toggleSQL()">
+      {{ showSQL ? "Hide" : "Show" }} SQL Query
+    </button>
+    <div *ngIf="showSQL" class="sql-display">
+      <pre>{{ message.metadata.generatedSQL }}</pre>
+    </div>
+  </div>
+</div>

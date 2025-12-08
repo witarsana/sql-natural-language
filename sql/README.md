@@ -94,14 +94,14 @@ nano .env
 **Required Environment Variables:**
 
 ```env
-# Database (already configured)
-DATABASE_HOST=103.186.63.189
-DATABASE_NAME=aus_dev_chronicle_dev
-DATABASE_USER=chronicle
-DATABASE_PASSWORD=V8OHd&2+)wO2;8;l
+# Database
+DATABASE_HOST=your_database_host
+DATABASE_NAME=your_database_name
+DATABASE_USER=your_database_user
+DATABASE_PASSWORD=your_database_password
 DATABASE_PORT=3306
 
-# AI (you need to add this)
+# AI
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
 ```
 

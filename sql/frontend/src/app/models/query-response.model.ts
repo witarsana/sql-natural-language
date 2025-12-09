@@ -14,11 +14,22 @@ export interface QueryResponse {
   error?: string;
   metadata: {
     executionTime: number;
-    generatedSQL: string;
+    generatedSQL?: string;
     role: string;
     timestamp: string;
     cached?: boolean;
+    explanation?: string;
+    confidence?: "high" | "medium" | "low";
   };
+  needsClarification?: boolean;
+  clarificationPrompt?: string;
+  missingContext?: MissingContext[];
+}
+
+export interface MissingContext {
+  field: string;
+  message: string;
+  suggestions?: string[];
 }
 
 export interface ExampleQuery {

@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { Message } from "../../models/message.model";
 
 @Component({
@@ -8,11 +8,16 @@ import { Message } from "../../models/message.model";
 })
 export class MessageComponent {
   @Input() message!: Message;
+  @Output() suggestionClicked = new EventEmitter<string>();
 
   showSQL = false;
 
   toggleSQL(): void {
     this.showSQL = !this.showSQL;
+  }
+
+  onSuggestionClick(suggestion: string): void {
+    this.suggestionClicked.emit(suggestion);
   }
 
   formatTime(date: Date): string {

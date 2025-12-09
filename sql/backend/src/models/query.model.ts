@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // User roles
 export enum UserRole {
-  ADMIN = 'Admin',
-  SALES = 'Sales',
-  OPERATIONS = 'Operations',
-  MANAGEMENT = 'Management',
+  ADMIN = "Admin",
+  SALES = "Sales",
+  OPERATIONS = "Operations",
+  MANAGEMENT = "Management",
 }
 
 // Query request schema
@@ -23,6 +23,9 @@ export interface QueryResponse {
   data?: QueryResultData;
   error?: string;
   metadata: QueryMetadata;
+  needsClarification?: boolean;
+  clarificationPrompt?: string;
+  missingContext?: MissingContext[];
 }
 
 export interface QueryResultData {
@@ -33,17 +36,25 @@ export interface QueryResultData {
 
 export interface QueryMetadata {
   executionTime: number;
-  generatedSQL: string;
+  generatedSQL?: string;
   role: UserRole;
   timestamp: string;
   cached?: boolean;
+  explanation?: string;
+  confidence?: "high" | "medium" | "low";
+}
+
+export interface MissingContext {
+  field: string;
+  message: string;
+  suggestions?: string[];
 }
 
 // AI response schema
 export interface AIResponse {
   sql: string;
   explanation: string;
-  confidence: 'high' | 'medium' | 'low';
+  confidence: "high" | "medium" | "low";
 }
 
 // Error types
@@ -54,27 +65,27 @@ export class QueryError extends Error {
     public statusCode: number = 400
   ) {
     super(message);
-    this.name = 'QueryError';
+    this.name = "QueryError";
   }
 }
 
 export class ValidationError extends QueryError {
   constructor(message: string) {
-    super(message, 'VALIDATION_ERROR', 400);
-    this.name = 'ValidationError';
+    super(message, "VALIDATION_ERROR", 400);
+    this.name = "ValidationError";
   }
 }
 
 export class DatabaseError extends QueryError {
   constructor(message: string) {
-    super(message, 'DATABASE_ERROR', 500);
-    this.name = 'DatabaseError';
+    super(message, "DATABASE_ERROR", 500);
+    this.name = "DatabaseError";
   }
 }
 
 export class AIError extends QueryError {
   constructor(message: string) {
-    super(message, 'AI_ERROR', 500);
-    this.name = 'AIError';
+    super(message, "AI_ERROR", 500);
+    this.name = "AIError";
   }
 }

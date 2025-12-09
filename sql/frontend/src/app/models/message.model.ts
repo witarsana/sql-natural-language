@@ -1,10 +1,17 @@
 export interface Message {
   id: string;
-  type: "user" | "system" | "error";
+  type: "user" | "system" | "error" | "clarification";
   content: string;
   timestamp: Date;
   data?: QueryResult;
   metadata?: QueryMetadata;
+  missingContext?: MissingContext[];
+}
+
+export interface MissingContext {
+  field: string;
+  message: string;
+  suggestions?: string[];
 }
 
 export interface QueryResult {
@@ -15,8 +22,10 @@ export interface QueryResult {
 
 export interface QueryMetadata {
   executionTime: number;
-  generatedSQL: string;
+  generatedSQL?: string;
   role: string;
   timestamp: string;
   cached?: boolean;
+  explanation?: string;
+  confidence?: "high" | "medium" | "low";
 }

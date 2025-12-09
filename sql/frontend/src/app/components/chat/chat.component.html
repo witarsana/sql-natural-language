@@ -42,6 +42,7 @@
     <app-message
       *ngFor="let message of messages"
       [message]="message"
+      (suggestionClicked)="onSuggestionClick($event)"
     ></app-message>
 
     <!-- Loading indicator -->

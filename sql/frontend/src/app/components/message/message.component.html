@@ -3,17 +3,21 @@
   [class.user-message]="message.type === 'user'"
   [class.system-message]="message.type === 'system'"
   [class.error-message]="message.type === 'error'"
+  [class.clarification-message]="message.type === 'clarification'"
 >
   <div class="message-header">
     <span class="message-type">
       <span *ngIf="message.type === 'user'" class="icon">👤</span>
       <span *ngIf="message.type === 'system'" class="icon">🤖</span>
       <span *ngIf="message.type === 'error'" class="icon">⚠️</span>
+      <span *ngIf="message.type === 'clarification'" class="icon">❓</span>
       {{
         message.type === "user"
           ? "You"
           : message.type === "error"
           ? "Error"
+          : message.type === "clarification"
+          ? "Chronicle AI - Need More Info"
           : "Chronicle AI"
       }}
     </span>
@@ -22,6 +26,26 @@
 
   <div class="message-content">
     <p>{{ message.content }}</p>
+  </div>
+
+  <!-- Clarification Context -->
+  <div
+    *ngIf="message.missingContext && message.type === 'clarification'"
+    class="clarification-context"
+  >
+    <div *ngFor="let context of message.missingContext" class="context-section">
+      <div *ngIf="context.suggestions && context.suggestions.length > 0">
+        <div class="suggestions-grid">
+          <button
+            *ngFor="let suggestion of context.suggestions"
+            class="suggestion-button"
+            (click)="onSuggestionClick(suggestion)"
+          >
+            {{ suggestion }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Query Results -->

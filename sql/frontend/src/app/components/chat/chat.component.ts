@@ -24,6 +24,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   currentRole: UserRole = UserRole.SALES;
   examples: any[] = [];
   showExamples = true;
+  pendingQuestion: string | null = null; // Track original question when waiting for clarification
 
   private shouldScroll = false;
 
@@ -76,9 +77,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       return;
     }
 
-    const question = this.currentQuestion.trim();
+    let question = this.currentQuestion.trim();
     this.currentQuestion = "";
     this.showExamples = false;
+
+    // If we have a pending question (from clarification), combine them
+    if (this.pendingQuestion) {
+      question = `${this.pendingQuestion} at ${question}`;
+      this.pendingQuestion = null; // Clear pending question
+    }
 
     // Add user message
     const userMessage: Message = {
@@ -96,13 +103,35 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       next: (response) => {
         this.isLoading = false;
 
+        // Handle clarification requests
+        if (response.needsClarification && response.clarificationPrompt) {
+          // Store the original question for later
+          this.pendingQuestion = question;
+
+          const clarificationMessage: Message = {
+            id: this.generateId(),
+            type: "clarification",
+            content: response.clarificationPrompt,
+            timestamp: new Date(),
+            missingContext: response.missingContext,
+          };
+          this.messages.push(clarificationMessage);
+          this.shouldScroll = true;
+          return;
+        }
+
         if (response.success && response.data) {
+          // Use AI explanation if available, otherwise use default message
+          const content =
+            response.metadata.explanation ||
+            `Found ${response.data.rowCount} ${
+              response.data.rowCount === 1 ? "result" : "results"
+            }`;
+
           const systemMessage: Message = {
             id: this.generateId(),
             type: "system",
-            content: `Found ${response.data.rowCount} ${
-              response.data.rowCount === 1 ? "result" : "results"
-            }`,
+            content: content,
             timestamp: new Date(),
             data: response.data,
             metadata: response.metadata,
@@ -139,6 +168,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.showExamples = false;
   }
 
+  onSuggestionClick(suggestion: string): void {
+    this.currentQuestion = suggestion;
+    // Auto-send if it's not "All cemeteries" which needs the original question
+    if (this.pendingQuestion && suggestion !== "All cemeteries") {
+      this.sendMessage();
+    }
+  }
+
   onEnterKey(event: KeyboardEvent): void {
     if (!event.shiftKey) {
       event.preventDefault();
@@ -152,6 +189,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   clearChat(): void {
     this.messages = [];
+    this.pendingQuestion = null; // Clear pending question on chat clear
     this.addWelcomeMessage();
     this.showExamples = true;
   }

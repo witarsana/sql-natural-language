@@ -48,7 +48,7 @@ This system allows non-technical staff to query cemetery data using plain Englis
 
 ### 5-Layer Protection:
 
-1. **AI-Level**: Claude trained to generate only SELECT queries
+1. **AI-Level**: AI model trained to generate only SELECT queries
 2. **Keyword Blacklist**: DELETE, DROP, INSERT, UPDATE, etc. blocked
 3. **Injection Detection**: Pattern matching for SQL injection attempts
 4. **Query Structure**: Validates syntax, balanced parentheses, single statements
@@ -66,7 +66,7 @@ This system allows non-technical staff to query cemetery data using plain Englis
 - **Node.js**: v18+
 - **Angular CLI**: v17+
 - **MySQL**: 5.7+ or 8.0+
-- **Anthropic API Key**: For Claude AI
+- **OpenRouter API Key**: Free tier available
 
 ## 🚀 Installation
 
@@ -101,17 +101,18 @@ DATABASE_USER=your_database_user
 DATABASE_PASSWORD=your_database_password
 DATABASE_PORT=3306
 
-# AI
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
+# AI (OpenRouter - Free Tier)
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
 
-**Get Anthropic API Key:**
+**Get OpenRouter API Key (FREE):**
 
-1. Go to https://console.anthropic.com/
-2. Sign up or log in
-3. Navigate to API Keys
-4. Create a new key
-5. Copy and paste into `.env`
+1. Go to https://openrouter.ai/
+2. Sign up with your email (it's free!)
+3. Navigate to https://openrouter.ai/keys
+4. Click "Create Key"
+5. Copy the API key and paste into `.env`
+6. Free tier includes access to various open-source models
 
 ### 3. Frontend Setup
 

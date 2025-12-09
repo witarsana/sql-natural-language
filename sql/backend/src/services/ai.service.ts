@@ -1,18 +1,17 @@
-import Anthropic from '@anthropic-ai/sdk';
-import { env } from '../config/env.config';
-import { logger } from '../utils/logger';
-import { AIError, AIResponse, UserRole } from '../models/query.model';
-import { getSystemPrompt } from '../prompts/system-prompt';
+import { env } from "../config/env.config";
+import { logger } from "../utils/logger";
+import { AIError, AIResponse, UserRole } from "../models/query.model";
+import { getSystemPrompt } from "../prompts/system-prompt";
 
 export class AIService {
-  private client: Anthropic;
-  private readonly model = 'claude-3-5-sonnet-20241022';
+  private readonly apiKey: string;
+  private readonly baseURL = "https://openrouter.ai/api/v1";
+  // Using DeepSeek R1T2 Chimera - free model
+  private readonly model = "tngtech/deepseek-r1t2-chimera:free";
   private readonly maxTokens = 2000;
 
   constructor() {
-    this.client = new Anthropic({
-      apiKey: env.ANTHROPIC_API_KEY,
-    });
+    this.apiKey = env.OPENROUTER_API_KEY;
   }
 
   /**
@@ -20,52 +19,103 @@ export class AIService {
    */
   async generateSQL(question: string, role: UserRole): Promise<AIResponse> {
     try {
-      logger.info('Generating SQL with Claude:', { question, role });
+      logger.info("Generating SQL with OpenRouter:", {
+        question,
+        role,
+        model: this.model,
+      });
 
       const systemPrompt = getSystemPrompt(role);
 
-      const message = await this.client.messages.create({
-        model: this.model,
-        max_tokens: this.maxTokens,
-        system: systemPrompt,
-        messages: [
-          {
-            role: 'user',
-            content: question,
-          },
-        ],
-        temperature: 0.2, // Low temperature for consistent SQL generation
+      const response = await fetch(`${this.baseURL}/chat/completions`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "Chronicle NL Query System",
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            {
+              role: "user",
+              content: question,
+            },
+          ],
+          temperature: 0.2,
+          max_tokens: this.maxTokens,
+        }),
       });
 
-      // Extract text content from Claude's response
-      const content = message.content[0];
-      if (content.type !== 'text') {
-        throw new AIError('Unexpected response format from Claude');
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.error("OpenRouter API error:", {
+          status: response.status,
+          error: errorText,
+          model: this.model,
+        });
+
+        // If model not found, suggest checking available models
+        if (response.status === 404) {
+          logger.error(
+            "Model not found. Please check available models at https://openrouter.ai/models"
+          );
+        }
+
+        throw new AIError(`OpenRouter API error: ${response.statusText}`);
       }
 
-      const responseText = content.text.trim();
-      
+      const data = await response.json();
+
+      // Check if response has the expected structure
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        logger.error("Invalid OpenRouter response structure:", { data });
+        throw new AIError("Invalid response structure from OpenRouter");
+      }
+
+      const responseText = data.choices[0].message.content?.trim();
+
+      if (!responseText) {
+        logger.error("Empty response from OpenRouter:", { data });
+        throw new AIError("Empty response from OpenRouter");
+      }
+
       // Parse JSON response
       let aiResponse: AIResponse;
       try {
         // Extract JSON if wrapped in markdown code blocks
-        const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || 
-                         responseText.match(/\{[\s\S]*\}/);
-        const jsonText = jsonMatch ? jsonMatch[1] || jsonMatch[0] : responseText;
-        
+        const jsonMatch =
+          responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) ||
+          responseText.match(/\{[\s\S]*\}/);
+        const jsonText = jsonMatch
+          ? jsonMatch[1] || jsonMatch[0]
+          : responseText;
+
         aiResponse = JSON.parse(jsonText);
       } catch (parseError) {
-        logger.error('Failed to parse AI response:', { responseText, parseError });
-        throw new AIError('Failed to parse AI response as JSON');
+        logger.error("Failed to parse AI response:", {
+          responseText,
+          parseError,
+        });
+        throw new AIError("Failed to parse AI response as JSON");
       }
 
       // Validate response structure
-      if (!aiResponse.sql || !aiResponse.explanation || !aiResponse.confidence) {
-        throw new AIError('Invalid AI response structure');
+      if (
+        !aiResponse.sql ||
+        !aiResponse.explanation ||
+        !aiResponse.confidence
+      ) {
+        throw new AIError("Invalid AI response structure");
       }
 
-      logger.info('SQL generated successfully:', {
-        sql: aiResponse.sql.substring(0, 100) + '...',
+      logger.info("SQL generated successfully:", {
+        sql: aiResponse.sql.substring(0, 100) + "...",
         confidence: aiResponse.confidence,
       });
 
@@ -75,13 +125,13 @@ export class AIService {
         throw error;
       }
 
-      logger.error('AI service error:', error);
-      
-      if (error instanceof Anthropic.APIError) {
-        throw new AIError(`Claude API error: ${error.message}`);
+      logger.error("AI service error:", error);
+
+      if (error instanceof Error) {
+        throw new AIError(`OpenRouter API error: ${error.message}`);
       }
 
-      throw new AIError('Failed to generate SQL query');
+      throw new AIError("Failed to generate SQL query");
     }
   }
 
@@ -90,20 +140,27 @@ export class AIService {
    */
   async healthCheck(): Promise<boolean> {
     try {
-      const response = await this.client.messages.create({
-        model: this.model,
-        max_tokens: 10,
-        messages: [
-          {
-            role: 'user',
-            content: 'Hello',
-          },
-        ],
+      const response = await fetch(`${this.baseURL}/chat/completions`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: [
+            {
+              role: "user",
+              content: "Hello",
+            },
+          ],
+          max_tokens: 10,
+        }),
       });
 
-      return response.content.length > 0;
+      return response.ok;
     } catch (error) {
-      logger.error('AI health check failed:', error);
+      logger.error("AI health check failed:", error);
       return false;
     }
   }

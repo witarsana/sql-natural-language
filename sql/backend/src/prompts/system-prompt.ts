@@ -2,7 +2,7 @@ import { UserRole } from "../models/query.model";
 import { SCHEMA, COMMON_JOINS, NL_MAPPINGS } from "../models/schema.model";
 
 /**
- * System prompt for Claude AI to generate MySQL queries
+ * System prompt for AI to generate MySQL queries
  * This prompt provides context about the Chronicle database schema
  * and rules for generating safe, accurate SQL queries
  */
@@ -136,20 +136,47 @@ export const getSystemPrompt = (role: UserRole): string => {
 
 ## NATURAL LANGUAGE MAPPINGS
 
-Plot Status:
-- "available" = status = 'Available'
-- "occupied" = status = 'Occupied' OR EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE plot_id = cemeteries_plot.id)
-- "empty" = status = 'Available' AND NOT EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE plot_id = cemeteries_plot.id)
+### Plot Status Values (EXACT):
+- "vacant" = status = 'Vacant'
+- "occupied" = status = 'Occupied'
+- "unavailable" = status = 'Unavailable'
 - "reserved" = status = 'Reserved'
-- "sold" = status = 'Sold'
+- "interest" = status = 'Interest'
+- "for sale" = status = 'For Sale'
 
-Plot Types:
-- "burial plot" = plot_type = 'Burial'
-- "cremation plot" = plot_type = 'Cremation'
+### Plot Type Values (EXACT):
+- "monumental" = plot_type = 'Monumental'
+- "vault" = plot_type = 'Vault'
+- "lawn" = plot_type = 'Lawn'
+- "garden" = plot_type = 'Garden'
+- "columbarium" = plot_type = 'Columbarium'
+- "mausoleum" = plot_type = 'Mausoleum'
+- "cremation" = plot_type = 'Cremation'
+- "memorial" = plot_type = 'Memorial'
+- "other" = plot_type = 'Other'
+
+### Gender Values (EXACT):
+- "male" = gender = 'Male'
+- "female" = gender = 'Female'
+- "unspecified" = gender = 'Unspecified'
+- "nonbinary" = gender = 'Nonbinary'
+
+### Special Badge (returned_serviceman_badge):
+- "Citizen" = returned_serviceman_badge = 1
+- "Sailors" = returned_serviceman_badge = 2
+- "Navy" = returned_serviceman_badge = 3
+- "Artists" = returned_serviceman_badge = 4
+- "Notable Characters" = returned_serviceman_badge = 5
+- "Revolutionary War" = returned_serviceman_badge = 6
+- "Veteran" OR "Returned Service Person" = returned_serviceman_badge = 7
+
+### Common Queries:
+- "available plots" = status = 'Vacant' OR status = 'For Sale'
+- "occupied plots" = status = 'Occupied' OR EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE plot_id = cemeteries_plot.id)
 - "family plot" = (total_capacity >= 4 OR burials_capacity >= 4)
 - "single plot" = (total_capacity = 1 OR burials_capacity = 1)
 
-Interment Types:
+### Interment Types:
 - "burial" = interment_type = 'Burial'
 - "cremation" = interment_type = 'Cremation'
 - "entombment" = interment_type = 'Entombment'
@@ -226,35 +253,128 @@ You must respond with a JSON object containing:
 
 ## EXAMPLES
 
+### Plot Availability
 User: "Show me all available plots in section A"
 Response:
 {
-  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND cemeteries_section.name = 'A' AND cemeteries_plot.status = 'Available' ORDER BY cemeteries_plot.row, cemeteries_plot.plot_no",
-  "explanation": "Retrieves all non-deleted plots in section A with 'Available' status",
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND cemeteries_section.name = 'A' AND (cemeteries_plot.status = 'Vacant' OR cemeteries_plot.status = 'For Sale') ORDER BY cemeteries_plot.row, cemeteries_plot.plot_no",
+  "explanation": "Retrieves all non-deleted plots in section A with 'Vacant' or 'For Sale' status",
   "confidence": "high"
 }
 
-User: "How many occupied plots are there?"
+User: "How many empty plots are in section B?"
 Response:
 {
-  "sql": "SELECT COUNT(DISTINCT cemeteries_plot.id) as occupied_count FROM cemeteries_plot WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND (cemeteries_plot.status = 'Occupied' OR EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE cemeteries_intermentrecord.plot_id = cemeteries_plot.id))",
-  "explanation": "Counts plots marked as occupied or having interment records",
+  "sql": "SELECT COUNT(*) as empty_plot_count FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND cemeteries_section.name = 'B' AND cemeteries_plot.status = 'Vacant' AND NOT EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE cemeteries_intermentrecord.plot_id = cemeteries_plot.id)",
+  "explanation": "Counts vacant plots in section B with no interment records",
+  "confidence": "high"
+}
+
+User: "List all family plots that are available"
+Response:
+{
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND (cemeteries_plot.status = 'Vacant' OR cemeteries_plot.status = 'For Sale') AND (cemeteries_plot.total_capacity >= 4 OR cemeteries_plot.burials_capacity >= 4) ORDER BY cemeteries_plot.section, cemeteries_plot.row, cemeteries_plot.plot_no",
+  "explanation": "Retrieves available plots with capacity for 4 or more people (family plots)",
+  "confidence": "high"
+}
+
+### Occupancy
+User: "Which plots are currently occupied?"
+Response:
+{
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND (cemeteries_plot.status = 'Occupied' OR EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE cemeteries_intermentrecord.plot_id = cemeteries_plot.id)) ORDER BY cemeteries_plot.section, cemeteries_plot.row, cemeteries_plot.plot_no",
+  "explanation": "Retrieves plots marked as occupied or having interment records",
+  "confidence": "high"
+}
+
+User: "Show me all graves in section C"
+Response:
+{
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name, COUNT(cemeteries_intermentrecord.id) as interment_count FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id LEFT JOIN cemeteries_intermentrecord ON cemeteries_plot.id = cemeteries_intermentrecord.plot_id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND cemeteries_section.name = 'C' GROUP BY cemeteries_plot.id ORDER BY cemeteries_plot.row, cemeteries_plot.plot_no",
+  "explanation": "Retrieves all plots in section C with count of interments per plot",
   "confidence": "high"
 }
 
 User: "List all deceased persons buried in 2024"
 Response:
 {
-  "sql": "SELECT cemeteries_person.first_name, cemeteries_person.last_name, cemeteries_person.middle_name, cemeteries_intermentrecord.interment_date, cemeteries_intermentrecord.date_of_birth, cemeteries_intermentrecord.date_of_death, cemeteries_plot.plot_id, cemeteries_plot.section, cemeteries_section.name as section_name FROM cemeteries_intermentrecord INNER JOIN cemeteries_person ON cemeteries_intermentrecord.person_id = cemeteries_person.id AND cemeteries_person.deleted_at IS NULL LEFT JOIN cemeteries_plot ON cemeteries_intermentrecord.plot_id = cemeteries_plot.id AND cemeteries_plot.deleted_at IS NULL LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE YEAR(cemeteries_intermentrecord.interment_date) = 2024 ORDER BY cemeteries_intermentrecord.interment_date DESC",
-  "explanation": "Retrieves all persons with interments in 2024 including plot details",
+  "sql": "SELECT cemeteries_person.first_name, cemeteries_person.last_name, cemeteries_person.middle_name, cemeteries_person.gender, cemeteries_intermentrecord.interment_date, cemeteries_intermentrecord.date_of_birth, cemeteries_intermentrecord.date_of_death, cemeteries_intermentrecord.age, cemeteries_plot.plot_id, cemeteries_plot.section, cemeteries_plot.row, cemeteries_plot.plot_no, cemeteries_section.name as section_name FROM cemeteries_intermentrecord INNER JOIN cemeteries_person ON cemeteries_intermentrecord.person_id = cemeteries_person.id AND cemeteries_person.deleted_at IS NULL LEFT JOIN cemeteries_plot ON cemeteries_intermentrecord.plot_id = cemeteries_plot.id AND cemeteries_plot.deleted_at IS NULL LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE YEAR(cemeteries_intermentrecord.interment_date) = 2024 ORDER BY cemeteries_intermentrecord.interment_date DESC",
+  "explanation": "Retrieves all persons with interments in 2024 including plot and section details",
   "confidence": "high"
 }
 
-User: "Show me plots with price information"
+### Reservations
+User: "Show all reserved plots"
 Response:
 {
-  "sql": "SELECT cemeteries_plot.id, cemeteries_plot.plot_id, cemeteries_plot.section, cemeteries_plot.row, cemeteries_plot.plot_no, cemeteries_plot.price, cemeteries_plot.status, cemeteries_plot.plot_type, cemeteries_section.name as section_name FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND cemeteries_plot.price IS NOT NULL AND cemeteries_plot.price > 0 ORDER BY cemeteries_plot.price ASC",
-  "explanation": "Retrieves plots with pricing information, sorted by price",
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND cemeteries_plot.status = 'Reserved' ORDER BY cemeteries_plot.section, cemeteries_plot.row, cemeteries_plot.plot_no",
+  "explanation": "Retrieves all plots with Reserved status",
+  "confidence": "high"
+}
+
+User: "Which plots have active reservations?"
+Response:
+{
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name, cemeteries_applicationrecord.application_date, cemeteries_applicationrecord.expiry_date, cemeteries_applicationrecord.right_type FROM cemeteries_plot INNER JOIN cemeteries_applicationrecord ON cemeteries_plot.id = cemeteries_applicationrecord.plot_id LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND (cemeteries_applicationrecord.expiry_date IS NULL OR cemeteries_applicationrecord.expiry_date > CURDATE()) ORDER BY cemeteries_applicationrecord.application_date DESC",
+  "explanation": "Retrieves plots with application records that haven't expired",
+  "confidence": "high"
+}
+
+User: "List reservations expiring this month"
+Response:
+{
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name, cemeteries_applicationrecord.application_date, cemeteries_applicationrecord.expiry_date, cemeteries_applicationrecord.right_type, cemeteries_person.first_name, cemeteries_person.last_name FROM cemeteries_applicationrecord INNER JOIN cemeteries_plot ON cemeteries_applicationrecord.plot_id = cemeteries_plot.id AND cemeteries_plot.deleted_at IS NULL LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id LEFT JOIN cemeteries_person ON cemeteries_applicationrecord.applicant_id = cemeteries_person.id AND cemeteries_person.deleted_at IS NULL WHERE YEAR(cemeteries_applicationrecord.expiry_date) = YEAR(CURDATE()) AND MONTH(cemeteries_applicationrecord.expiry_date) = MONTH(CURDATE()) ORDER BY cemeteries_applicationrecord.expiry_date ASC",
+  "explanation": "Retrieves application records expiring in current month with plot and applicant details",
+  "confidence": "high"
+}
+
+### Statistics
+User: "How many available plots do we have in total?"
+Response:
+{
+  "sql": "SELECT COUNT(*) as total_available_plots FROM cemeteries_plot WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND (cemeteries_plot.status = 'Vacant' OR cemeteries_plot.status = 'For Sale')",
+  "explanation": "Counts all plots with Vacant or For Sale status",
+  "confidence": "high"
+}
+
+User: "What is the occupancy rate by section?"
+Response:
+{
+  "sql": "SELECT cemeteries_section.name as section_name, COUNT(cemeteries_plot.id) as total_plots, SUM(CASE WHEN cemeteries_plot.status = 'Occupied' OR EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE cemeteries_intermentrecord.plot_id = cemeteries_plot.id) THEN 1 ELSE 0 END) as occupied_plots, ROUND((SUM(CASE WHEN cemeteries_plot.status = 'Occupied' OR EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE cemeteries_intermentrecord.plot_id = cemeteries_plot.id) THEN 1 ELSE 0 END) / COUNT(cemeteries_plot.id)) * 100, 2) as occupancy_rate_percent FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 GROUP BY cemeteries_section.id, cemeteries_section.name ORDER BY occupancy_rate_percent DESC",
+  "explanation": "Calculates occupancy statistics grouped by section",
+  "confidence": "high"
+}
+
+User: "Show me the most expensive available plots"
+Response:
+{
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND (cemeteries_plot.status = 'Vacant' OR cemeteries_plot.status = 'For Sale') AND cemeteries_plot.price IS NOT NULL AND cemeteries_plot.price > 0 ORDER BY cemeteries_plot.price DESC LIMIT 20",
+  "explanation": "Retrieves top 20 available plots with highest prices",
+  "confidence": "high"
+}
+
+### Search
+User: "Find person named John Smith"
+Response:
+{
+  "sql": "SELECT cemeteries_person.*, cemeteries_intermentrecord.interment_date, cemeteries_plot.plot_id, cemeteries_plot.section, cemeteries_plot.row, cemeteries_plot.plot_no, cemeteries_section.name as section_name FROM cemeteries_person LEFT JOIN cemeteries_intermentrecord ON cemeteries_person.id = cemeteries_intermentrecord.person_id LEFT JOIN cemeteries_plot ON cemeteries_intermentrecord.plot_id = cemeteries_plot.id AND cemeteries_plot.deleted_at IS NULL LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_person.deleted_at IS NULL AND cemeteries_person.first_name LIKE '%John%' AND cemeteries_person.last_name LIKE '%Smith%' ORDER BY cemeteries_person.last_name, cemeteries_person.first_name",
+  "explanation": "Searches for persons with name matching John Smith including their plot locations",
+  "confidence": "high"
+}
+
+User: "Show all plots in row 5"
+Response:
+{
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND cemeteries_plot.row = '5' ORDER BY cemeteries_plot.section, cemeteries_plot.plot_no",
+  "explanation": "Retrieves all plots in row 5 across all sections",
+  "confidence": "high"
+}
+
+User: "List all plots larger than 15 square meters"
+Response:
+{
+  "sql": "SELECT cemeteries_plot.*, cemeteries_section.name as section_name, (cemeteries_plot.length * cemeteries_plot.width) as area_sqm FROM cemeteries_plot LEFT JOIN cemeteries_section ON cemeteries_plot.section_link_id = cemeteries_section.id WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND cemeteries_plot.length IS NOT NULL AND cemeteries_plot.width IS NOT NULL AND (cemeteries_plot.length * cemeteries_plot.width) > 15 ORDER BY area_sqm DESC",
+  "explanation": "Calculates plot area and filters for plots larger than 15 square meters",
   "confidence": "high"
 }
 

@@ -1,6 +1,6 @@
 export interface QueryRequest {
   question: string;
-  role: string;
+  role?: string;
   sessionId?: string;
 }
 

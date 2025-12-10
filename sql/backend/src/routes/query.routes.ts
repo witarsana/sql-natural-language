@@ -18,7 +18,7 @@ export default async function queryRoutes(fastify: FastifyInstance) {
       schema: {
         body: {
           type: "object",
-          required: ["question", "role"],
+          required: ["question"],
           properties: {
             question: { type: "string", minLength: 1, maxLength: 500 },
             role: {
@@ -64,7 +64,7 @@ export default async function queryRoutes(fastify: FastifyInstance) {
             missingContext: validation.missingContext,
             metadata: {
               executionTime: Date.now() - startTime,
-              role: validatedData.role,
+              role: validatedData.role || "Admin",
               timestamp: new Date().toISOString(),
             },
           };
@@ -96,7 +96,7 @@ export default async function queryRoutes(fastify: FastifyInstance) {
           metadata: {
             executionTime: Date.now() - startTime,
             generatedSQL: sanitizedSQL,
-            role: validatedData.role,
+            role: validatedData.role || "Admin",
             timestamp: new Date().toISOString(),
             explanation: aiResponse.explanation,
             confidence: aiResponse.confidence,

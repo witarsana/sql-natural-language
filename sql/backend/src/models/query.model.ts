@@ -11,7 +11,7 @@ export enum UserRole {
 // Query request schema
 export const queryRequestSchema = z.object({
   question: z.string().min(1).max(500),
-  role: z.nativeEnum(UserRole),
+  role: z.nativeEnum(UserRole).optional(),
   sessionId: z.string().optional(),
 });
 

@@ -1,16 +1,16 @@
-import { UserRole, AIResponse } from '../models/query.model';
-import { aiService } from './ai.service';
-import { validationService } from './validation.service';
-import { env } from '../config/env.config';
-import { logger } from '../utils/logger';
+import { UserRole, AIResponse } from "../models/query.model";
+import { aiService } from "./ai.service";
+import { validationService } from "./validation.service";
+import { env } from "../config/env.config";
+import { logger } from "../utils/logger";
 
 export class QueryBuilderService {
   /**
    * Main orchestration: Natural language -> Validated SQL
    */
-  async buildQuery(question: string, role: UserRole): Promise<AIResponse> {
+  async buildQuery(question: string, role?: UserRole): Promise<AIResponse> {
     try {
-      logger.info('Building query:', { question, role });
+      logger.info("Building query:", { question, role });
 
       // Step 1: Generate SQL using AI
       const aiResponse = await aiService.generateSQL(question, role);
@@ -22,7 +22,10 @@ export class QueryBuilderService {
       let safeSql = validationService.injectSafetyFilters(aiResponse.sql);
 
       // Step 4: Add result limit if needed
-      safeSql = validationService.validateResultLimit(safeSql, env.MAX_QUERY_RESULTS);
+      safeSql = validationService.validateResultLimit(
+        safeSql,
+        env.MAX_QUERY_RESULTS
+      );
 
       // Return enhanced response
       return {
@@ -31,7 +34,7 @@ export class QueryBuilderService {
         confidence: aiResponse.confidence,
       };
     } catch (error) {
-      logger.error('Query building failed:', error);
+      logger.error("Query building failed:", error);
       throw error;
     }
   }
@@ -46,7 +49,7 @@ export class QueryBuilderService {
     } catch (error) {
       return {
         valid: false,
-        error: error instanceof Error ? error.message : 'Validation failed',
+        error: error instanceof Error ? error.message : "Validation failed",
       };
     }
   }

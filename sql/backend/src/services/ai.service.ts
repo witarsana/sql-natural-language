@@ -17,15 +17,17 @@ export class AIService {
   /**
    * Generate SQL query from natural language question
    */
-  async generateSQL(question: string, role: UserRole): Promise<AIResponse> {
+  async generateSQL(question: string, role?: UserRole): Promise<AIResponse> {
     try {
+      const effectiveRole = role || UserRole.ADMIN;
+
       logger.info("Generating SQL with OpenRouter:", {
         question,
-        role,
+        role: effectiveRole,
         model: this.model,
       });
 
-      const systemPrompt = getSystemPrompt(role);
+      const systemPrompt = getSystemPrompt(effectiveRole);
 
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: "POST",

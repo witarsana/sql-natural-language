@@ -20,7 +20,7 @@ export class QueryService {
   /**
    * Send natural language query to backend
    */
-  executeQuery(question: string, role: string): Observable<QueryResponse> {
+  executeQuery(question: string, role?: string): Observable<QueryResponse> {
     const request: QueryRequest = {
       question,
       role,

@@ -6,9 +6,7 @@ import {
   AfterViewChecked,
 } from "@angular/core";
 import { QueryService } from "../../services/query.service";
-import { AuthService } from "../../services/auth.service";
 import { Message } from "../../models/message.model";
-import { UserRole } from "../../models/role.model";
 
 @Component({
   selector: "app-chat",
@@ -21,23 +19,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   messages: Message[] = [];
   currentQuestion = "";
   isLoading = false;
-  currentRole: UserRole = UserRole.SALES;
   examples: any[] = [];
   showExamples = true;
   pendingQuestion: string | null = null; // Track original question when waiting for clarification
 
   private shouldScroll = false;
 
-  constructor(
-    private queryService: QueryService,
-    private authService: AuthService
-  ) {}
+  constructor(private queryService: QueryService) {}
 
   ngOnInit(): void {
-    this.authService.currentRole$.subscribe((role) => {
-      this.currentRole = role;
-    });
-
     this.loadExamples();
     this.addWelcomeMessage();
   }
@@ -99,7 +89,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     // Execute query
     this.isLoading = true;
-    this.queryService.executeQuery(question, this.currentRole).subscribe({
+    this.queryService.executeQuery(question).subscribe({
       next: (response) => {
         this.isLoading = false;
 

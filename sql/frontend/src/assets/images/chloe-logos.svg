@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" fill="none">
+  <!-- Circle Profile Icon -->
+  <g id="profile-circle">
+    <circle cx="100" cy="100" r="85" stroke="#7C83D1" stroke-width="4.5" fill="none"/>
+    
+    <!-- Inner circle -->
+    <circle cx="100" cy="100" r="75" stroke="#7C83D1" stroke-width="3" fill="none"/>
+    
+    <!-- Profile silhouette -->
+    <path d="M 65 75 Q 65 60 75 55 Q 85 52 95 55 Q 103 58 108 68" 
+          stroke="#7C83D1" stroke-width="3" fill="none" stroke-linecap="round"/>
+    
+    <!-- Face outline -->
+    <path d="M 108 68 Q 115 78 115 90 Q 115 102 110 110 Q 108 115 105 118" 
+          stroke="#7C83D1" stroke-width="3" fill="none" stroke-linecap="round"/>
+    
+    <!-- Nose and chin -->
+    <path d="M 105 90 Q 108 92 107 95" 
+          stroke="#7C83D1" stroke-width="2" fill="none" stroke-linecap="round"/>
+    
+    <!-- Neck and shoulders -->
+    <path d="M 105 118 Q 102 130 95 138 Q 85 145 75 148 Q 65 150 55 148" 
+          stroke="#7C83D1" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 105 118 Q 108 130 115 138 Q 125 145 135 148 Q 145 150 155 148" 
+          stroke="#7C83D1" stroke-width="4" fill="none" stroke-linecap="round"/>
+    
+    <!-- Hair flow -->
+    <path d="M 75 55 Q 68 65 65 80 Q 63 95 65 110" 
+          stroke="#7C83D1" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M 65 110 Q 65 125 70 135" 
+          stroke="#7C83D1" stroke-width="3" fill="none" stroke-linecap="round"/>
+    
+    <!-- Flower decoration -->
+    <g transform="translate(105, 60)">
+      <!-- Center -->
+      <circle cx="0" cy="0" r="6" fill="#7C83D1"/>
+      <!-- Petals -->
+      <circle cx="-7" cy="-4" r="4.5" fill="#7C83D1" opacity="0.85"/>
+      <circle cx="7" cy="-4" r="4.5" fill="#7C83D1" opacity="0.85"/>
+      <circle cx="-7" cy="4" r="4.5" fill="#7C83D1" opacity="0.85"/>
+      <circle cx="7" cy="4" r="4.5" fill="#7C83D1" opacity="0.85"/>
+      <circle cx="0" cy="-7" r="4" fill="#7C83D1" opacity="0.85"/>
+      <!-- Center dot -->
+      <circle cx="0" cy="0" r="2.5" fill="white"/>
+    </g>
+    
+    <!-- Hair details -->
+    <path d="M 70 70 Q 68 80 70 90" 
+          stroke="#7C83D1" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  
+  <!-- Chloe Text -->
+  <text x="220" y="125" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" 
+        font-size="95" 
+        font-weight="400" 
+        fill="#7C83D1" 
+        letter-spacing="-2">Chloe</text>
+</svg>

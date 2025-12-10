@@ -17,8 +17,8 @@
           : message.type === "error"
           ? "Error"
           : message.type === "clarification"
-          ? "Chronicle AI - Need More Info"
-          : "Chronicle AI"
+          ? "Chloe - Need More Info"
+          : "Chloe"
       }}
     </span>
     <span class="message-time">{{ formatTime(message.timestamp) }}</span>
@@ -53,7 +53,10 @@
     *ngIf="message.data && message.type === 'system'"
     class="message-results"
   >
-    <app-table-result [data]="message.data"></app-table-result>
+    <app-table-result 
+      [data]="message.data"
+      (loadMore)="onLoadMore()"
+    ></app-table-result>
   </div>
 
   <!-- Metadata -->

@@ -2,6 +2,8 @@ export interface QueryRequest {
   question: string;
   role?: string;
   sessionId?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export interface QueryResponse {
@@ -10,6 +12,10 @@ export interface QueryResponse {
     rows: Record<string, any>[];
     columns: string[];
     rowCount: number;
+    hasMore?: boolean;
+    totalCount?: number;
+    limit?: number;
+    offset?: number;
   };
   error?: string;
   metadata: {

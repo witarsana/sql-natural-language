@@ -20,7 +20,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   currentQuestion = "";
   isLoading = false;
   examples: any[] = [];
-  showExamples = true;
+  showExamples = false;
   pendingQuestion: string | null = null; // Track original question when waiting for clarification
 
   private shouldScroll = false;
@@ -44,7 +44,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       id: this.generateId(),
       type: "system",
       content:
-        "Welcome to Chronicle Natural Language Query System! Ask me anything about plots, graves, sections, or statistics.",
+        "👋 Hello! I'm Chloe, your AI assistant for Chronicle cemetery data. I can help you query interments, plots, cemeteries, and more using plain English. What would you like to know?",
       timestamp: new Date(),
     };
     this.messages.push(welcomeMessage);
@@ -125,6 +125,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
             timestamp: new Date(),
             data: response.data,
             metadata: response.metadata,
+            originalQuestion: question, // Store original question for pagination
           };
           this.messages.push(systemMessage);
         } else {
@@ -166,6 +167,53 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  onLoadMore(message: Message): void {
+    if (!message.data || !message.data.hasMore || !message.originalQuestion) {
+      return;
+    }
+
+    const offset = (message.data.offset || 0) + (message.data.limit || 1000);
+    const limit = message.data.limit || 1000;
+
+    this.isLoading = true;
+    this.queryService
+      .executeQuery(message.originalQuestion, undefined, limit, offset)
+      .subscribe({
+        next: (response) => {
+          this.isLoading = false;
+
+          if (response.success && response.data) {
+            // Append new rows to existing data
+            message.data!.rows.push(...response.data.rows);
+            message.data!.rowCount = message.data!.rows.length;
+            message.data!.hasMore = response.data.hasMore;
+            message.data!.totalCount = response.data.totalCount;
+            message.data!.offset = offset;
+
+            // Update message content with new count
+            const content =
+              response.metadata.explanation ||
+              `Showing ${message.data!.rowCount} of ${message.data!.totalCount} results`;
+            message.content = content;
+
+            this.shouldScroll = true;
+          }
+        },
+        error: (error) => {
+          this.isLoading = false;
+          const errorMessage: Message = {
+            id: this.generateId(),
+            type: "error",
+            content:
+              error.message || "Failed to load more results. Please try again.",
+            timestamp: new Date(),
+          };
+          this.messages.push(errorMessage);
+          this.shouldScroll = true;
+        },
+      });
+  }
+
   onEnterKey(event: KeyboardEvent): void {
     if (!event.shiftKey) {
       event.preventDefault();
@@ -180,8 +228,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   clearChat(): void {
     this.messages = [];
     this.pendingQuestion = null; // Clear pending question on chat clear
+    this.currentQuestion = ''; // Clear current input
     this.addWelcomeMessage();
-    this.showExamples = true;
   }
 
   private scrollToBottom(): void {

@@ -26,6 +26,20 @@
   </div>
 
   <div *ngIf="data.rowCount > 0" class="table-footer">
-    <span>{{ data.rowCount }} {{ data.rowCount === 1 ? "row" : "rows" }}</span>
+    <div class="footer-info">
+      <span *ngIf="data.totalCount">
+        Showing {{ (data.offset || 0) + 1 }} - {{ (data.offset || 0) + data.rowCount }} of {{ data.totalCount }} rows
+      </span>
+      <span *ngIf="!data.totalCount">
+        {{ data.rowCount }} {{ data.rowCount === 1 ? "row" : "rows" }}
+      </span>
+    </div>
+    <button 
+      *ngIf="data.hasMore" 
+      class="load-more-button"
+      (click)="onLoadMore()"
+    >
+      Load More
+    </button>
   </div>
 </div>

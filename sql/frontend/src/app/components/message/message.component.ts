@@ -9,6 +9,7 @@ import { Message } from "../../models/message.model";
 export class MessageComponent {
   @Input() message!: Message;
   @Output() suggestionClicked = new EventEmitter<string>();
+  @Output() loadMore = new EventEmitter<Message>();
 
   showSQL = false;
 
@@ -18,6 +19,10 @@ export class MessageComponent {
 
   onSuggestionClick(suggestion: string): void {
     this.suggestionClicked.emit(suggestion);
+  }
+
+  onLoadMore(): void {
+    this.loadMore.emit(this.message);
   }
 
   formatTime(date: Date): string {

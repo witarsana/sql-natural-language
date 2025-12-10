@@ -1,14 +1,18 @@
 /* Global Styles */
 :root {
-  --primary-color: #667eea;
-  --secondary-color: #764ba2;
+  --primary-color: #7c72d1;
+  --primary-light: #9d95dd;
+  --primary-dark: #5b52a3;
+  --accent-color: #e8e5f7;
   --success-color: #10b981;
   --error-color: #dc2626;
   --warning-color: #f59e0b;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --border-color: #e5e7eb;
-  --background: #f9fafb;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border-color: #e0e0e0;
+  --background: #ffffff;
+  --background-light: #fafafa;
 }
 
 * {
@@ -99,17 +103,26 @@ textarea {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--background-light);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 5px;
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
 }
 
 ::-webkit-scrollbar-thumb:hover {

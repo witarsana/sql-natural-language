@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { QueryResult } from "../../models/message.model";
 
 @Component({
@@ -8,6 +8,11 @@ import { QueryResult } from "../../models/message.model";
 })
 export class TableResultComponent {
   @Input() data!: QueryResult;
+  @Output() loadMore = new EventEmitter<void>();
+
+  onLoadMore(): void {
+    this.loadMore.emit();
+  }
 
   formatValue(value: any): string {
     if (value === null || value === undefined) {

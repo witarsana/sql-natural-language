@@ -6,6 +6,7 @@ export interface Message {
   data?: QueryResult;
   metadata?: QueryMetadata;
   missingContext?: MissingContext[];
+  originalQuestion?: string; // Store original question for pagination
 }
 
 export interface MissingContext {
@@ -18,6 +19,10 @@ export interface QueryResult {
   rows: Record<string, any>[];
   columns: string[];
   rowCount: number;
+  hasMore?: boolean;
+  totalCount?: number;
+  limit?: number;
+  offset?: number;
 }
 
 export interface QueryMetadata {

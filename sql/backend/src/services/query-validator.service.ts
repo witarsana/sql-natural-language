@@ -73,12 +73,13 @@ export class QueryValidatorService {
   private mightNeedCemeteryContext(question: string): boolean {
     const lowerQuestion = question.toLowerCase();
 
-    // Queries that explicitly mention "all" might not need specific cemetery
+    // Queries that explicitly mention "all" or specific cemetery don't need clarification
     if (
       lowerQuestion.includes("all cemeteries") ||
       lowerQuestion.includes("every cemetery") ||
       lowerQuestion.includes("total across") ||
-      lowerQuestion.includes("system-wide")
+      lowerQuestion.includes("system-wide") ||
+      lowerQuestion.includes("at all cemeteries")
     ) {
       return false;
     }

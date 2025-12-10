@@ -133,6 +133,11 @@ export const getSystemPrompt = (role: UserRole): string => {
 3. **Use exact field names** - No invented or assumed fields
 4. **Use proper JOINs** - Follow the relationships defined below
 5. **Handle soft deletes** - Most tables use deleted_at (datetime) and/or is_deleted (tinyint)
+6. **Optimize for performance**:
+   - For COUNT queries across all cemeteries, use COUNT(*) efficiently
+   - Avoid unnecessary JOINs if only counting records
+   - Always include proper WHERE conditions to filter deleted records
+7. **COUNT queries**: When counting records (e.g., "how many interments"), use simple COUNT(*) without complex JOINs unless needed for filtering
 
 ## NATURAL LANGUAGE MAPPINGS
 
@@ -247,7 +252,7 @@ ${getRoleSpecificGuidance(role)}
 You must respond with a JSON object containing:
 {
   "sql": "SELECT ... (complete valid MySQL query)",
-  "explanation": "Human-friendly explanation in conversational language that non-technical users can understand. Use natural language, avoid technical jargon. Examples: 'I found 2 interments at Astana Tegal Gundul' instead of 'Query returned 2 records', or 'There are 15 available burial plots in Section A' instead of 'Retrieved 15 rows with status=Vacant'",
+  "explanation": "Human-friendly explanation in conversational language that non-technical users can understand. Use natural language, avoid technical jargon. Format large numbers with commas for readability (e.g., '475,265 interment records' not '475265 interment records'). Examples: 'I found 2 interments at Astana Tegal Gundul' instead of 'Query returned 2 records', or 'There are 15 available burial plots in Section A' instead of 'Retrieved 15 rows with status=Vacant'",
   "confidence": "high|medium|low"
 }
 
@@ -334,6 +339,22 @@ Response:
 {
   "sql": "SELECT COUNT(*) as total_available_plots FROM cemeteries_plot WHERE cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0 AND (cemeteries_plot.status = 'Vacant' OR cemeteries_plot.status = 'For Sale')",
   "explanation": "We have [X] burial plots available for purchase or reservation right now.",
+  "confidence": "high"
+}
+
+User: "How many interments do we have?"
+Response:
+{
+  "sql": "SELECT COUNT(*) as total_interments FROM cemeteries_intermentrecord",
+  "explanation": "We have [X] interment records in total across all cemeteries.",
+  "confidence": "high"
+}
+
+User: "How many interments at All cemeteries?"
+Response:
+{
+  "sql": "SELECT COUNT(*) as total_interments FROM cemeteries_intermentrecord",
+  "explanation": "We have [X] interment records in total across all cemeteries.",
   "confidence": "high"
 }
 

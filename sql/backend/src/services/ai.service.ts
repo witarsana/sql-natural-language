@@ -3,6 +3,18 @@ import { logger } from "../utils/logger";
 import { AIError, AIResponse, UserRole } from "../models/query.model";
 import { getSystemPrompt } from "../prompts/system-prompt";
 
+/**
+ * Format numbers in text with thousand separators
+ */
+function formatNumbersInText(text: string): string {
+  // Match standalone numbers (not part of IDs, codes, or dates)
+  // Look for numbers with 4+ digits that are word-bounded
+  return text.replace(/\b(\d{4,})\b/g, (match) => {
+    const num = parseInt(match, 10);
+    return num.toLocaleString("en-US");
+  });
+}
+
 export class AIService {
   private readonly apiKey: string;
   private readonly baseURL = "https://openrouter.ai/api/v1";
@@ -115,6 +127,9 @@ export class AIService {
       ) {
         throw new AIError("Invalid AI response structure");
       }
+
+      // Format numbers in the explanation with thousand separators
+      aiResponse.explanation = formatNumbersInText(aiResponse.explanation);
 
       logger.info("SQL generated successfully:", {
         sql: aiResponse.sql.substring(0, 100) + "...",

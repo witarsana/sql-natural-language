@@ -16,6 +16,13 @@ export class TableResultComponent {
     if (typeof value === "boolean") {
       return value ? "Yes" : "No";
     }
+    // Format numbers with thousand separators
+    if (typeof value === "number" || this.isNumericString(value)) {
+      const num = typeof value === "number" ? value : parseFloat(value);
+      if (!isNaN(num)) {
+        return num.toLocaleString("en-US");
+      }
+    }
     if (value instanceof Date || this.isDateString(value)) {
       return new Date(value).toLocaleDateString("en-US", {
         year: "numeric",
@@ -24,6 +31,12 @@ export class TableResultComponent {
       });
     }
     return String(value);
+  }
+
+  private isNumericString(value: any): boolean {
+    if (typeof value !== "string") return false;
+    // Check if string is purely numeric (including decimals)
+    return /^\d+(\.\d+)?$/.test(value.trim());
   }
 
   private isDateString(value: any): boolean {

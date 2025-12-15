@@ -53,14 +53,14 @@
     *ngIf="message.data && message.type === 'system'"
     class="message-results"
   >
-    <app-table-result 
+    <app-table-result
       [data]="message.data"
       (loadMore)="onLoadMore()"
     ></app-table-result>
   </div>
 
   <!-- Metadata -->
-  <div
+  <!-- <div
     *ngIf="message.metadata && message.type === 'system'"
     class="message-metadata"
   >
@@ -84,5 +84,5 @@
     <div *ngIf="showSQL" class="sql-display">
       <pre>{{ message.metadata.generatedSQL }}</pre>
     </div>
-  </div>
+  </div> -->
 </div>

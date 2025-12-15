@@ -5,8 +5,9 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "vercel-build": "echo 'Using pre-built files'",
+    "build": "npm run generate-schema && tsc",
+    "generate-schema": "node scripts/generate-schema-constant.js",
+    "vercel-build": "npm run generate-schema",
     "start": "node dist/server.js",
     "test": "jest",
     "test:watch": "jest --watch",

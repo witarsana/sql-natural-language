@@ -1,5 +1,6 @@
 import { UserRole } from "../models/query.model";
 import { SCHEMA, COMMON_JOINS, NL_MAPPINGS } from "../models/schema.model";
+import { getDatabaseSchema } from "../utils/schema-loader";
 
 /**
  * System prompt for AI to generate MySQL queries
@@ -12,132 +13,39 @@ export const getSystemPrompt = (role: UserRole): string => {
 
 ## DATABASE SCHEMA
 
-### Core Tables:
+${getDatabaseSchema()}
 
-**cemeteries_cemetery** (Cemetery properties)
-- id (PK), name, unique_name, database, location, bounds, description
-- status, working_hours, web_site, organization_id
-- deleted (tinyint), archived (tinyint)
-- created_at, updated_at
+## STRICT FIELD USAGE RULES
 
-**cemeteries_section** (Cemetery sections/areas)
-- id (PK), name, type, polygon, cemetery_id (FK)
-- background, rotate_degree, section_order
-- created_at, updated_at
-
-**cemeteries_lot** (Cemetery lots)
-- id (PK), name, type, polygon, cemetery_id (FK)
-- background, rotate_degree, lot_order
-- created_at, updated_at
-
-**cemeteries_plot** (Individual burial plots)
-- id (PK), plot_id, external_id, unique_id
-- section, row, plot_no, lot
-- status (varchar: 'Available', 'Occupied', 'Reserved', etc.)
-- length, width, total_capacity, burials_capacity, cremation_capacity, entombment_capacity
-- price, show_price, plot_type, direction
-- inscription, note, custom_fields (json)
-- cemetery_id (FK), section_link_id (FK), lot_link_id (FK)
-- deleted_at (datetime), is_deleted (tinyint)
-- created_at, updated_at
-
-**cemeteries_person** (Deceased and contact persons)
-- id (PK), external_id, unique_id, contact_id
-- title, first_name, middle_name, last_name, gender
-- notes, cem_unique_name
-- is_applicant, is_holder
-- deleted_at (datetime), is_deleted (tinyint)
-- created_at, updated_at
-
-**cemeteries_intermentrecord** (Burial/interment records)
-- id (PK), external_id, unique_id, interment_number
-- person_id (FK to cemeteries_person), plot_id (FK to cemeteries_plot)
-- interment_date, interment_type, interment_depth, interment_depth_unit
-- date_of_birth, date_of_death, age
-- cause_of_death, occupation, religion, other_religion
-- returned_serviceman, returned_serviceman_badge
-- headstone, container_type, container_dimensions, cremation_location
-- applicant_id (FK), funeral_director_id (FK), interment_minister_id (FK)
-- comment, custom_fields (json), also_for (json)
-- created_at, updated_at
-
-**cemeteries_applicationrecord** (Plot applications/rights)
-- id (PK), external_id, unique_id
-- plot_id (FK), applicant_id (FK to cemeteries_person)
-- application_date, right_type, term_of_right (json)
-- fee, fee_paid, payment_date, certificate_number
-- service_need, expiry_date, note
-- invoice_id (FK), custom_fields (json)
-- created_at, updated_at
-
-**cemeteries_plotpurchaser** (Plot purchasers)
-- id (PK), plot_id (FK), event_id (FK)
-- first_name, last_name, email, mobile_phone
-- purc_price, purchase_code
-- billing_address, billing_city, billing_state, billing_postcode, billing_country, billing_phone_number
-- comments, custom_form_value (json)
-- created_at, updated_at
-
-**cemeteries_business** (Business entities - funeral directors, etc.)
-- id (PK), business_name, business_code, business_type_id (FK)
-- person_id (FK), comment
-- deleted_at, is_deleted
-- created_at, updated_at
-
-**cemeteries_address** (Contact addresses)
-- id (PK), street, suburb, postcode, state, country
-- cemetery_id (FK), person_id (FK)
-- primary (tinyint)
-- created_at, updated_at
-
-**cemeteries_phone** (Contact phones)
-- id (PK), phone_type, phone_number
-- cemetery_id (FK), person_id (FK)
-- created_at, updated_at
-
-**cemeteries_email** (Contact emails)
-- id (PK), email
-- cemetery_id (FK), person_id (FK)
-- created_at, updated_at
-
-**cemeteries_intermentstory** (Memorial stories)
-- id (PK), unique_id, external_id
-- interment_id (FK), title, text
-- status_story, approval_step, approval_user_id, approved_at, rejected_at, rejected_reason
-- is_featured, is_admin, relationship_interment
-- created_at, updated_at
-
-**cemeteries_events** (Cemetery events)
-- id (PK), unique_id, external_id, event_name
-- types, descriptions, event_types_id (FK), event_subtype_id (FK)
-- start_time, end_time, repeating, repeat_until
-- plot_id (FK), section_id (FK), cemetery_id (FK)
-- related_interment_id (FK), location_type
-- event_status_id (FK), is_completed, is_deleted
-- created_at, updated_at
-
-**invoices_invoice** (Invoices)
-- id (PK), external_id, invoice_number
-- invoice_date, due_date, issue_date, status, internal_status
-- customer (json), purchaser_id (FK), purchaser_person_id (FK)
-- currency, currency_symbol, subtotal, grand_total, tax_amount, total_discount
-- cemetery_id (FK), organization_id (FK), owner_id (FK)
-- created_at, updated_at
+1. **ONLY use fields documented in the DATABASE SCHEMA above** - Every field you use must appear exactly as listed in the schema tables
+2. **NEVER invent or assume field names** - If a field isn't listed in the schema, it doesn't exist in the database
+3. **Field names must match EXACTLY** - Including capitalization, underscores, and spelling
+4. **When in doubt, use fewer fields** - It's better to omit a field than to guess or invent one
+5. **If a reasonable field seems missing** - Mention this limitation in your explanation, but never invent the field
 
 ## CRITICAL RULES
 
 1. **ONLY generate SELECT queries** - Never DELETE, INSERT, UPDATE, DROP, or any other modification
-2. **Always filter deleted records**: 
-   - \`WHERE deleted_at IS NULL\` for plots, persons, business
-   - \`WHERE is_deleted = 0\` for plots, persons, events
-3. **Use exact field names** - No invented or assumed fields
+
+2. **Soft Delete Filtering - ONLY for these specific tables**:
+   - **cemeteries_plot**: Add \`WHERE deleted_at IS NULL AND is_deleted = 0\`
+   - **cemeteries_person**: Add \`WHERE deleted_at IS NULL AND is_deleted = 0\`
+   - **cemeteries_business**: Add \`WHERE deleted_at IS NULL AND is_deleted = 0\`
+   - **cemeteries_events**: Add \`WHERE is_deleted = 0\`
+   - **cemeteries_cemetery**: Add \`WHERE deleted = 0\` (note: column is 'deleted', not 'is_deleted')
+
+   **IMPORTANT**: Other tables like cemeteries_intermentrecord, cemeteries_applicationrecord, cemeteries_section, cemeteries_lot, etc. do NOT have soft delete columns. Do NOT add deleted_at or is_deleted filters to these tables!
+
+3. **Use exact field names from schema above** - No invented or assumed fields. If a column doesn't exist in the schema, don't use it.
+
 4. **Use proper JOINs** - Follow the relationships defined below
-5. **Handle soft deletes** - Most tables use deleted_at (datetime) and/or is_deleted (tinyint)
-6. **Optimize for performance**:
-   - For COUNT queries across all cemeteries, use COUNT(*) efficiently
+
+5. **Optimize for performance**:
+   - For COUNT queries, use COUNT(*) efficiently
    - Avoid unnecessary JOINs if only counting records
-   - Always include proper WHERE conditions to filter deleted records
-7. **COUNT queries**: When counting records (e.g., "how many interments"), use simple COUNT(*) without complex JOINs unless needed for filtering
+   - Only add WHERE conditions for soft deletes on tables that have those columns
+
+6. **COUNT queries**: When counting records (e.g., "how many interments"), use simple COUNT(*) without complex JOINs unless needed for filtering. For cemeteries_intermentrecord, do NOT add deleted_at or is_deleted filters.
 
 ## NATURAL LANGUAGE MAPPINGS
 

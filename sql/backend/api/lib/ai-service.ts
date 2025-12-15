@@ -1,9 +1,16 @@
-// Simplified AI Service for serverless
+// AI Service for serverless - uses generated schema constant
+import { DATABASE_SCHEMA } from './generated-schema';
+
 export enum UserRole {
   ADMIN = "Admin",
   SALES = "Sales",
   OPERATIONS = "Operations",
   MANAGEMENT = "Management",
+}
+
+// Use the generated schema constant (embedded at build time)
+function getDatabaseSchema(): string {
+  return DATABASE_SCHEMA;
 }
 
 export interface AIResponse {
@@ -70,31 +77,56 @@ export async function generateSQL(
   }
 }
 
-// Simplified system prompt (key parts only to save space)
+// Complete system prompt with full DATABASE_SCHEMA.md
 function getSystemPrompt(role: UserRole): string {
-  return `You are a SQL query generator for Chronicle cemetery management system.
+  return `You are a SQL query generator for Chronicle, a cemetery management system. Your task is to convert natural language questions into MySQL SELECT queries.
 
 ## DATABASE SCHEMA
-Main tables: cemeteries_plot, cemeteries_intermentrecord, cemeteries_person,
-cemeteries_section, cemeteries_applicationrecord, cemeteries_cemetery
+
+${getDatabaseSchema()}
+
+## STRICT FIELD USAGE RULES
+
+1. **ONLY use fields documented in the DATABASE SCHEMA above** - Every field you use must appear exactly as listed in the schema tables
+2. **NEVER invent or assume field names** - If a field isn't listed in the schema, it doesn't exist in the database
+3. **Field names must match EXACTLY** - Including capitalization, underscores, and spelling
+4. **When in doubt, use fewer fields** - It's better to omit a field than to guess or invent one
+5. **If a reasonable field seems missing** - Mention this limitation in your explanation, but never invent the field
 
 ## CRITICAL RULES
-1. ONLY generate SELECT queries
-2. Always filter deleted: WHERE deleted_at IS NULL AND is_deleted = 0
-3. Use exact field names from schema
-4. Plot status values: 'Vacant', 'Occupied', 'Reserved', 'For Sale'
+
+1. **ONLY generate SELECT queries** - Never DELETE, INSERT, UPDATE, DROP, or any other modification
+
+2. **Soft Delete Filtering - ONLY for these specific tables**:
+   - **cemeteries_plot**: Add \`WHERE deleted_at IS NULL AND is_deleted = 0\`
+   - **cemeteries_person**: Add \`WHERE deleted_at IS NULL AND is_deleted = 0\`
+   - **cemeteries_business**: Add \`WHERE deleted_at IS NULL AND is_deleted = 0\`
+   - **cemeteries_events**: Add \`WHERE is_deleted = 0\`
+   - **cemeteries_cemetery**: Add \`WHERE deleted = 0\` (note: column is 'deleted', not 'is_deleted')
+
+   **IMPORTANT**: Other tables like cemeteries_intermentrecord, cemeteries_applicationrecord, cemeteries_section, cemeteries_lot, etc. do NOT have soft delete columns. Do NOT add deleted_at or is_deleted filters to these tables!
+
+3. **Use exact field names from schema above** - No invented or assumed fields. If a column doesn't exist in the schema, don't use it.
+
+4. **Plot status values (EXACT)**: 'Vacant', 'Occupied', 'Unavailable', 'Reserved', 'Interest', 'For Sale'
+
+## NATURAL LANGUAGE MAPPINGS
+
+- "occupied plots" = status = 'Occupied' OR EXISTS (SELECT 1 FROM cemeteries_intermentrecord WHERE plot_id = cemeteries_plot.id)
+- "available plots" = status = 'Vacant' OR status = 'For Sale'
+- "family plot" = (total_capacity >= 4 OR burials_capacity >= 4)
 
 ## RESPONSE FORMAT
-Return JSON:
+Return JSON only:
 {
-  "sql": "SELECT ...",
+  "sql": "SELECT ... (complete valid MySQL query)",
   "explanation": "Natural language explanation with comma-formatted numbers",
   "confidence": "high|medium|low"
 }
 
 Current user role: ${role}
 
-Generate query for user's question. Return ONLY JSON, no extra text.`;
+Generate query for the user's question. Return ONLY the JSON object, no additional text.`;
 }
 
 export async function healthCheck(): Promise<boolean> {

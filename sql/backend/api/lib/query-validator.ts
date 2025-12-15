@@ -129,9 +129,9 @@ function getCemeterySuggestions(): string[] {
   // These could be dynamically fetched from the database
   return [
     "All cemeteries",
-    "Rookwood Cemetery",
-    "Eastern Suburbs Cemetery",
-    "Woronora Cemetery",
+    "Astana Tegal Gundul",
+    "Demo Bali Office",
+    "Auckland Memorial Park Cemetery",
   ];
 }
 

@@ -3,6 +3,7 @@ import {
   queryRequestSchema,
   QueryRequest,
   QueryResponse,
+  UserRole,
 } from "../models/query.model";
 import { logger } from "../utils/logger";
 import { queryBuilderService } from "../services/query-builder.service";
@@ -64,7 +65,7 @@ export default async function queryRoutes(fastify: FastifyInstance) {
             missingContext: validation.missingContext,
             metadata: {
               executionTime: Date.now() - startTime,
-              role: validatedData.role || "Admin",
+              role: validatedData.role || UserRole.ADMIN,
               timestamp: new Date().toISOString(),
             },
           };
@@ -96,7 +97,7 @@ export default async function queryRoutes(fastify: FastifyInstance) {
           metadata: {
             executionTime: Date.now() - startTime,
             generatedSQL: sanitizedSQL,
-            role: validatedData.role || "Admin",
+            role: validatedData.role || UserRole.ADMIN,
             timestamp: new Date().toISOString(),
             explanation: aiResponse.explanation,
             confidence: aiResponse.confidence,

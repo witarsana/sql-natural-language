@@ -84,7 +84,7 @@ export class AIService {
         throw new AIError(`OpenRouter API error: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
 
       // Check if response has the expected structure
       if (!data.choices || !data.choices[0] || !data.choices[0].message) {

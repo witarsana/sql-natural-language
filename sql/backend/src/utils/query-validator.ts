@@ -15,7 +15,7 @@ export class QueryValidator {
     
     for (const match of matches) {
       const table = match[1].toLowerCase();
-      if (!allowedTables.includes(table)) {
+      if (!allowedTables.includes(table as any)) {
         throw new ValidationError(`Table '${table}' is not allowed or does not exist`);
       }
     }
@@ -35,9 +35,9 @@ export class QueryValidator {
       const field = match[2].toLowerCase();
       
       // Check if table exists in schema
-      const allowedFields = SCHEMA.ALLOWED_FIELDS[table as keyof typeof SCHEMA.ALLOWED_FIELDS];
-      
-      if (allowedFields && !allowedFields.includes(field)) {
+      const allowedFields = (SCHEMA.ALLOWED_FIELDS as any)[table];
+
+      if (allowedFields && !allowedFields.includes(field as any)) {
         throw new ValidationError(
           `Field '${field}' is not allowed or does not exist in table '${table}'`
         );

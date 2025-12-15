@@ -1,0 +1,16 @@
+node_modules
+.env
+.env.local
+.env.*.local
+tests
+docs
+*.log
+.DS_Store
+coverage
+jest.config.json
+.eslintrc
+.prettierrc
+*.md
+Dockerfile
+scripts
+build.sh

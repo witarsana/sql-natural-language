@@ -29,13 +29,19 @@ const cemeteryNamePatterns = [
 /**
  * Validate if query has sufficient context to execute
  */
-export function validateQuery(question: string): ValidationResult {
+export function validateQuery(
+  question: string,
+  conversationHistory?: any[]
+): ValidationResult {
   const lowerQuestion = question.toLowerCase();
   const missingContext: MissingContext[] = [];
 
   // Check if query might need cemetery context
-  const needsCemeteryContext = mightNeedCemeteryContext(question);
-  const hasCemetery = hasCemeteryIdentifier(question);
+  const needsCemeteryContext = mightNeedCemeteryContext(
+    question,
+    conversationHistory
+  );
+  const hasCemetery = hasCemeteryIdentifier(question, conversationHistory);
 
   if (needsCemeteryContext && !hasCemetery) {
     missingContext.push({
@@ -46,7 +52,7 @@ export function validateQuery(question: string): ValidationResult {
   }
 
   if (missingContext.length > 0) {
-    console.log('Query validation failed - missing context:', {
+    console.log("Query validation failed - missing context:", {
       question,
       missingContext,
     });
@@ -66,7 +72,10 @@ export function validateQuery(question: string): ValidationResult {
 /**
  * Check if query might need cemetery context
  */
-function mightNeedCemeteryContext(question: string): boolean {
+function mightNeedCemeteryContext(
+  question: string,
+  conversationHistory?: any[]
+): boolean {
   const lowerQuestion = question.toLowerCase();
 
   // Queries that explicitly mention "all" or specific cemetery don't need clarification
@@ -104,8 +113,11 @@ function mightNeedCemeteryContext(question: string): boolean {
 /**
  * Check if query already has cemetery identifier
  */
-function hasCemeteryIdentifier(question: string): boolean {
-  // Check for explicit cemetery keywords
+function hasCemeteryIdentifier(
+  question: string,
+  conversationHistory?: any[]
+): boolean {
+  // Check for explicit cemetery keywords in the current question
   const hasKeyword = cemeteryKeywords.some((keyword) =>
     question.toLowerCase().includes(keyword)
   );
@@ -114,12 +126,35 @@ function hasCemeteryIdentifier(question: string): boolean {
     return true;
   }
 
-  // Check for cemetery name patterns (e.g., "Rookwood Cemetery", "at Eastern Suburbs")
+  // Check for cemetery name patterns in the current question
   const hasPattern = cemeteryNamePatterns.some((pattern) =>
     pattern.test(question)
   );
 
-  return hasPattern;
+  if (hasPattern) {
+    return true;
+  }
+
+  // If not in the current question, check the conversation history
+  if (conversationHistory) {
+    for (const message of conversationHistory) {
+      const text = message.text || "";
+      const hasKeywordInHistory = cemeteryKeywords.some((keyword) =>
+        text.toLowerCase().includes(keyword)
+      );
+      if (hasKeywordInHistory) {
+        return true;
+      }
+      const hasPatternInHistory = cemeteryNamePatterns.some((pattern) =>
+        pattern.test(text)
+      );
+      if (hasPatternInHistory) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -138,11 +173,15 @@ function getCemeterySuggestions(): string[] {
 /**
  * Build clarification prompt for user
  */
-export function buildClarificationPrompt(missingContext: MissingContext[]): string {
+export function buildClarificationPrompt(
+  missingContext: MissingContext[]
+): string {
   const prompts = missingContext.map((context) => {
     let prompt = context.message;
     if (context.suggestions && context.suggestions.length > 0) {
-      prompt += `\n\nSuggestions:\n${context.suggestions.map((s) => `- ${s}`).join("\n")}`;
+      prompt += `\n\nSuggestions:\n${context.suggestions
+        .map((s) => `- ${s}`)
+        .join("\n")}`;
     }
     return prompt;
   });

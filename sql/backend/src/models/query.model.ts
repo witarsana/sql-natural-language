@@ -8,11 +8,21 @@ export enum UserRole {
   MANAGEMENT = "Management",
 }
 
+// Chat message for conversation history
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 // Query request schema
 export const queryRequestSchema = z.object({
   question: z.string().min(1).max(500),
   role: z.nativeEnum(UserRole).optional(),
   sessionId: z.string().optional(),
+  conversationHistory: z.array(z.object({
+    role: z.enum(['user', 'assistant']),
+    content: z.string()
+  })).optional(),
 });
 
 export type QueryRequest = z.infer<typeof queryRequestSchema>;

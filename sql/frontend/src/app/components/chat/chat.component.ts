@@ -7,6 +7,7 @@ import {
 } from "@angular/core";
 import { QueryService } from "../../services/query.service";
 import { Message } from "../../models/message.model";
+import { ChatMemoryService } from "../../services/chat-memory.service";
 
 @Component({
   selector: "app-chat",
@@ -25,7 +26,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   private shouldScroll = false;
 
-  constructor(private queryService: QueryService) {}
+  constructor(
+    private queryService: QueryService,
+    private chatMemory: ChatMemoryService
+  ) {}
 
   ngOnInit(): void {
     this.loadExamples();
@@ -40,11 +44,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   addWelcomeMessage(): void {
+    const hasHistory = this.chatMemory.hasActiveConversation();
+    const welcomeText = hasHistory
+      ? "👋 Welcome back! I remember our conversation. What else would you like to know?"
+      : "👋 Hello! I'm Chloe, your AI assistant for Chronicle cemetery data. I can help you query interments, plots, cemeteries, and more using plain English. What would you like to know?";
+    
     const welcomeMessage: Message = {
       id: this.generateId(),
       type: "system",
-      content:
-        "👋 Hello! I'm Chloe, your AI assistant for Chronicle cemetery data. I can help you query interments, plots, cemeteries, and more using plain English. What would you like to know?",
+      content: welcomeText,
       timestamp: new Date(),
     };
     this.messages.push(welcomeMessage);
@@ -67,15 +75,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       return;
     }
 
-    let question = this.currentQuestion.trim();
+    const question = this.currentQuestion.trim();
     this.currentQuestion = "";
     this.showExamples = false;
 
-    // If we have a pending question (from clarification), combine them
-    if (this.pendingQuestion) {
-      question = `${this.pendingQuestion} at ${question}`;
-      this.pendingQuestion = null; // Clear pending question
-    }
+    // Clear pending question when user types their own follow-up
+    // (suggestions handle their own concatenation in onSuggestionClick)
+    this.pendingQuestion = null;
 
     // Add user message
     const userMessage: Message = {
@@ -86,6 +92,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     };
     this.messages.push(userMessage);
     this.shouldScroll = true;
+
+    // Save user message to memory
+    this.chatMemory.addMessage('user', question);
 
     // Execute query
     this.isLoading = true;
@@ -107,6 +116,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           };
           this.messages.push(clarificationMessage);
           this.shouldScroll = true;
+
+          // Save clarification to memory
+          this.chatMemory.addMessage('assistant', response.clarificationPrompt);
           return;
         }
 
@@ -128,6 +140,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
             originalQuestion: question, // Store original question for pagination
           };
           this.messages.push(systemMessage);
+
+          // Save assistant response to memory
+          this.chatMemory.addMessage('assistant', content);
         } else {
           const errorMessage: Message = {
             id: this.generateId(),
@@ -136,6 +151,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
             timestamp: new Date(),
           };
           this.messages.push(errorMessage);
+
+          // Save error to memory
+          this.chatMemory.addMessage('assistant', response.error || "Query failed");
         }
         this.shouldScroll = true;
       },
@@ -150,6 +168,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         };
         this.messages.push(errorMessage);
         this.shouldScroll = true;
+
+        // Save error to memory
+        this.chatMemory.addMessage('assistant', error.message || "Failed to execute query. Please try again.");
       },
     });
   }
@@ -160,10 +181,19 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   onSuggestionClick(suggestion: string): void {
-    this.currentQuestion = suggestion;
-    // Auto-send if it's not "All cemeteries" which needs the original question
+    // If we have a pending question and user clicks a suggestion, combine them
     if (this.pendingQuestion && suggestion !== "All cemeteries") {
+      this.currentQuestion = `${this.pendingQuestion} at ${suggestion}`;
+      this.pendingQuestion = null;
       this.sendMessage();
+    } else if (this.pendingQuestion && suggestion === "All cemeteries") {
+      // For "All cemeteries", just use the original question
+      this.currentQuestion = this.pendingQuestion;
+      this.pendingQuestion = null;
+      this.sendMessage();
+    } else {
+      // No pending question, just set the suggestion
+      this.currentQuestion = suggestion;
     }
   }
 
@@ -229,7 +259,19 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.messages = [];
     this.pendingQuestion = null; // Clear pending question on chat clear
     this.currentQuestion = ''; // Clear current input
+    
+    // Clear conversation memory
+    this.chatMemory.clearHistory();
+    
     this.addWelcomeMessage();
+  }
+
+  getConversationInfo(): string {
+    return this.chatMemory.getConversationSummary();
+  }
+
+  hasConversationMemory(): boolean {
+    return this.chatMemory.hasActiveConversation();
   }
 
   private scrollToBottom(): void {

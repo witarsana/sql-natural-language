@@ -8,6 +8,7 @@ import {
   QueryResponse,
   ExampleQuery,
 } from "../models/query-response.model";
+import { ChatMemoryService } from "./chat-memory.service";
 
 @Injectable({
   providedIn: "root",
@@ -15,10 +16,13 @@ import {
 export class QueryService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private chatMemory: ChatMemoryService
+  ) {}
 
   /**
-   * Send natural language query to backend
+   * Send natural language query to backend with conversation history
    */
   executeQuery(
     question: string,
@@ -26,12 +30,16 @@ export class QueryService {
     limit?: number,
     offset?: number
   ): Observable<QueryResponse> {
+    // Get conversation history (last 10 messages for context)
+    const conversationHistory = this.chatMemory.getContext(10);
+
     const request: QueryRequest = {
       question,
       role,
       sessionId: this.getSessionId(),
       limit,
       offset,
+      conversationHistory,
     };
 
     return this.http

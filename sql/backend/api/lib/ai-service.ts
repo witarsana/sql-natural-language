@@ -21,7 +21,8 @@ export interface AIResponse {
 
 export async function generateSQL(
   question: string,
-  role?: UserRole
+  role?: UserRole,
+  history: { role: 'user' | 'assistant'; content: string }[] = []
 ): Promise<AIResponse> {
   const apiKey = process.env.OPENROUTER_API_KEY!;
   const effectiveRole = role || UserRole.ADMIN;
@@ -41,6 +42,7 @@ export async function generateSQL(
       model: "tngtech/deepseek-r1t2-chimera:free",
       messages: [
         { role: "system", content: systemPrompt },
+        ...history,
         { role: "user", content: question },
       ],
       temperature: 0.2,

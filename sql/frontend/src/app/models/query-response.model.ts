@@ -1,9 +1,15 @@
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export interface QueryRequest {
   question: string;
   role?: string;
   sessionId?: string;
   limit?: number;
   offset?: number;
+  conversationHistory?: ChatMessage[];
 }
 
 export interface QueryResponse {

@@ -33,7 +33,7 @@ export default async function queryRoutes(fastify: FastifyInstance) {
     },
     async (
       request: FastifyRequest<{ Body: QueryRequest }>,
-      reply: FastifyReply
+      reply: FastifyReply,
     ) => {
       const startTime = Date.now();
 
@@ -47,15 +47,16 @@ export default async function queryRoutes(fastify: FastifyInstance) {
           sessionId: validatedData.sessionId,
         });
 
-        // Step 1: Validate if query has sufficient context
+        // Step 1: Validate if query has sufficient context (check conversation history)
         const validation = queryValidatorService.validateQuery(
-          validatedData.question
+          validatedData.question,
+          validatedData.conversationHistory as any,
         );
 
         if (!validation.isValid && validation.missingContext) {
           const clarificationPrompt =
             queryValidatorService.buildClarificationPrompt(
-              validation.missingContext
+              validation.missingContext,
             );
 
           const response: QueryResponse = {
@@ -78,17 +79,71 @@ export default async function queryRoutes(fastify: FastifyInstance) {
           return reply.status(200).send(response);
         }
 
-        // Step 2: Build and validate SQL query using AI
+        // Step 2: Build and validate SQL query using AI with conversation context
         const aiResponse = await queryBuilderService.buildQuery(
           validatedData.question,
-          validatedData.role
+          validatedData.role,
+          validatedData.conversationHistory as any,
         );
 
-        // Step 3: Additional sanitization
-        const sanitizedSQL = SQLSanitizer.sanitizeSQL(aiResponse.sql);
+        // Step 3: Additional sanitization and validation
+        let sanitizedSQL: string;
+        try {
+          sanitizedSQL = SQLSanitizer.sanitizeSQL(aiResponse.sql);
+        } catch (sanitizeError: any) {
+          logger.error("SQL sanitization failed:", {
+            error: sanitizeError.message,
+            sql: aiResponse.sql,
+          });
+
+          // Return user-friendly error
+          const response: QueryResponse = {
+            success: false,
+            error: `Query validation failed: ${sanitizeError.message}. Please try rephrasing your question.`,
+            metadata: {
+              executionTime: Date.now() - startTime,
+              generatedSQL: aiResponse.sql,
+              role: validatedData.role || UserRole.ADMIN,
+              timestamp: new Date().toISOString(),
+            },
+          };
+          return reply.status(200).send(response);
+        }
 
         // Step 4: Execute query
-        const queryResult = await databaseService.executeQuery(sanitizedSQL);
+        let queryResult;
+        try {
+          queryResult = await databaseService.executeQuery(sanitizedSQL);
+        } catch (dbError: any) {
+          logger.error("Database query execution failed:", {
+            error: dbError.message,
+            sql: sanitizedSQL,
+          });
+
+          // Provide user-friendly error message
+          let errorMessage = "Failed to execute query. ";
+          if (dbError.message?.includes("Unknown column")) {
+            errorMessage +=
+              "The query referenced a field that doesn't exist in the database.";
+          } else if (dbError.message?.includes("syntax")) {
+            errorMessage += "The generated SQL has a syntax error.";
+          } else {
+            errorMessage += "Please try rephrasing your question.";
+          }
+
+          const response: QueryResponse = {
+            success: false,
+            error: errorMessage,
+            metadata: {
+              executionTime: Date.now() - startTime,
+              generatedSQL: sanitizedSQL,
+              role: validatedData.role || UserRole.ADMIN,
+              timestamp: new Date().toISOString(),
+              explanation: "Query failed to execute due to database error",
+            },
+          };
+          return reply.status(200).send(response);
+        }
 
         // Step 5: Build response
         const response: QueryResponse = {
@@ -115,7 +170,7 @@ export default async function queryRoutes(fastify: FastifyInstance) {
         logger.error("Query request failed:", error);
         throw error;
       }
-    }
+    },
   );
 
   // Get example queries endpoint
@@ -169,7 +224,7 @@ export default async function queryRoutes(fastify: FastifyInstance) {
         success: true,
         examples,
       });
-    }
+    },
   );
 
   // Get schema information endpoint
@@ -233,6 +288,6 @@ export default async function queryRoutes(fastify: FastifyInstance) {
         success: true,
         schema: schemaInfo,
       });
-    }
+    },
   );
 }

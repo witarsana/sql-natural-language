@@ -14,6 +14,58 @@
   font-size: 0.875rem;
 }
 
+.export-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1rem 0.5rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-light);
+}
+
+.export-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: white;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.export-button:hover {
+  background: var(--accent-color);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.export-button:active {
+  transform: translateY(0);
+}
+
+.export-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.export-pdf:hover {
+  background: #fee;
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.export-excel:hover {
+  background: #efe;
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
 .table-wrapper {
   overflow-x: auto;
   max-height: 400px;
@@ -48,6 +100,20 @@
 .results-table td {
   padding: 0.875rem 1rem;
   border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  max-width: 500px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.results-table td.html-content {
+  font-family: inherit;
+}
+
+.results-table td .html-stripped {
+  display: block;
+  white-space: pre-wrap;
+  line-height: 1.5;
   color: var(--text-primary);
 }
 

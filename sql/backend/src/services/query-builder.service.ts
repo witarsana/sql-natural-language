@@ -1,4 +1,4 @@
-import { UserRole, AIResponse } from "../models/query.model";
+import { UserRole, AIResponse, ChatMessage } from "../models/query.model";
 import { aiService } from "./ai.service";
 import { validationService } from "./validation.service";
 import { env } from "../config/env.config";
@@ -6,14 +6,18 @@ import { logger } from "../utils/logger";
 
 export class QueryBuilderService {
   /**
-   * Main orchestration: Natural language -> Validated SQL
+   * Main orchestration: Natural language -> Validated SQL with conversation context
    */
-  async buildQuery(question: string, role?: UserRole): Promise<AIResponse> {
+  async buildQuery(
+    question: string,
+    role?: UserRole,
+    conversationHistory?: ChatMessage[]
+  ): Promise<AIResponse> {
     try {
-      logger.info("Building query:", { question, role });
+      logger.info("Building query:", { question, role, hasHistory: !!conversationHistory });
 
-      // Step 1: Generate SQL using AI
-      const aiResponse = await aiService.generateSQL(question, role);
+      // Step 1: Generate SQL using AI with conversation context
+      const aiResponse = await aiService.generateSQL(question, role, conversationHistory);
 
       // Step 2: Validate SQL for safety
       validationService.validateSQL(aiResponse.sql);

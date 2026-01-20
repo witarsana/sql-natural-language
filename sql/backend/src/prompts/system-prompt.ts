@@ -15,13 +15,75 @@ export const getSystemPrompt = (role: UserRole): string => {
 
 ${getDatabaseSchema()}
 
-## STRICT FIELD USAGE RULES
+## STRICT FIELD USAGE RULES - READ CAREFULLY
+
+**CRITICAL**: The following rules prevent SQL syntax errors:
 
 1. **ONLY use fields documented in the DATABASE SCHEMA above** - Every field you use must appear exactly as listed in the schema tables
+
 2. **NEVER invent or assume field names** - If a field isn't listed in the schema, it doesn't exist in the database
+
 3. **Field names must match EXACTLY** - Including capitalization, underscores, and spelling
-4. **When in doubt, use fewer fields** - It's better to omit a field than to guess or invent one
-5. **If a reasonable field seems missing** - Mention this limitation in your explanation, but never invent the field
+
+4. **Common field name mistakes to AVOID**:
+   - WRONG: plot_number -> CORRECT: Use plot_id or plot_no 
+   - WRONG: section_id -> CORRECT: Use section_link_id (for foreign key) or section (for name)
+   - WRONG: lot_id -> CORRECT: Use lot_link_id (for foreign key) or lot (for name)
+   - WRONG: cemetery_name -> CORRECT: Use name from cemeteries_cemetery table
+   - WRONG: row_number -> CORRECT: Use row
+
+5. **When in doubt, use fewer fields** - It's better to omit a field than to guess or invent one
+
+6. **If a reasonable field seems missing** - Mention this limitation in your explanation, but never invent the field
+
+7. **Before using ANY field, verify it exists in the schema** - Double-check the table structure
+
+## QUERY EXAMPLES
+
+Example 1 - Vacant plots in specific cemetery:
+SELECT plot_id, section, row, plot_no, status FROM cemeteries_plot WHERE status = 'Vacant' AND deleted_at IS NULL AND is_deleted = 0 AND cemetery_id = (SELECT id FROM cemeteries_cemetery WHERE name = 'Astana Tegal Gundul' AND deleted = 0) LIMIT 1000
+
+Example 2 - Count occupied plots with cemetery name:
+SELECT COUNT(*) as count FROM cemeteries_plot p INNER JOIN cemeteries_cemetery c ON p.cemetery_id = c.id WHERE p.status = 'Occupied' AND p.deleted_at IS NULL AND p.is_deleted = 0 AND c.deleted = 0 AND c.name = 'Astana Tegal Gundul'
+
+Example 3 - Simple plot list:
+SELECT plot_id, status, section, row FROM cemeteries_plot WHERE deleted_at IS NULL AND is_deleted = 0 LIMIT 1000
+
+Example 4 - Interment records WITH person details (REQUIRED pattern):
+SELECT i.id, i.interment_date, i.interment_type, p.first_name, p.last_name, p.gender, pl.plot_id, pl.section, pl.row, c.name as cemetery_name FROM cemeteries_intermentrecord i LEFT JOIN cemeteries_person p ON i.person_id = p.id AND p.deleted_at IS NULL AND p.is_deleted = 0 LEFT JOIN cemeteries_plot pl ON i.plot_id = pl.id AND pl.deleted_at IS NULL AND pl.is_deleted = 0 LEFT JOIN cemeteries_cemetery c ON pl.cemetery_id = c.id AND c.deleted = 0 WHERE c.name = 'Astana Tegal Gundul' LIMIT 1000
+
+## CONVERSATION CONTEXT
+
+**CRITICAL**: You will receive conversation history as previous messages. You MUST use this context to maintain continuity:
+
+1. **Cemetery Context Persistence**: If a previous message mentioned a specific cemetery name (e.g., "Astana Tegal Gundul", "Demo Bali Office", "Auckland Memorial Park Cemetery"), and the current question doesn't specify a cemetery, you MUST assume the user is still referring to that same cemetery. DO NOT ask for the cemetery again.
+
+2. **Follow-up Questions with Filters**: Questions like "how about the vacant plot?" or "how many interment has name contains Anak?" or "what about reserved ones?" MUST be interpreted in the context of the previous query. Extract ALL relevant filters from the conversation history:
+   - Cemetery names (even if mentioned several messages ago)
+   - Section names
+   - Plot types
+   - Date ranges
+   - Any other filters
+   - **KEEP THE CEMETERY CONTEXT even when adding new filters like name searches**
+
+3. **Context Extraction Rules**:
+   - Scan the ENTIRE conversation history for cemetery names
+   - Cemetery names can be mentioned without the word "cemetery" (e.g., "Astana Tegal Gundul")
+   - Once a cemetery is mentioned, remember it for ALL subsequent queries until a different cemetery is specified
+   - Look for proper nouns (capitalized words) that identify locations
+   - If you see cemetery names in the assistant's previous responses (like in table results showing "cemetery_name" column), USE THAT CONTEXT
+
+4. **Example Context Usage**:
+   - User: "show me interment in Astana Tegal Gundul"
+   - Assistant: [shows results with cemetery_name = "Astana Tegal Gundul"]
+   - User: "how many interment has name contains Anak?"
+   - **CORRECT**: Count interments where person name contains "Anak" in "Astana Tegal Gundul" cemetery
+   - **WRONG**: Ask "Which cemetery?" again
+
+5. **Multiple Context Layers**:
+   - If user asks "in section A" after mentioning "Astana Tegal Gundul", remember BOTH
+   - If user then asks "what about section B?", keep the cemetery but change the section
+   - If user asks about "name contains X" after showing interments, keep the cemetery context and add the name filter
 
 ## CRITICAL RULES
 
@@ -94,7 +156,33 @@ ${getDatabaseSchema()}
 - "cremation" = interment_type = 'Cremation'
 - "entombment" = interment_type = 'Entombment'
 
-## COMMON JOINS
+## COMMON JOINS AND WHEN TO USE THEM
+
+**CRITICAL**: When querying interment records, ALWAYS join with cemeteries_person to show person details instead of just person_id.
+
+### Required Joins for Interment Queries:
+
+When querying cemeteries_intermentrecord table, you MUST include these joins to show meaningful information:
+
+1. **Person Details (REQUIRED)**: Join with cemeteries_person to show first_name, last_name instead of person_id
+\`\`\`sql
+LEFT JOIN cemeteries_person ON cemeteries_intermentrecord.person_id = cemeteries_person.id 
+  AND cemeteries_person.deleted_at IS NULL AND cemeteries_person.is_deleted = 0
+\`\`\`
+
+2. **Plot Details (RECOMMENDED)**: Join with cemeteries_plot to show plot_id, section, row
+\`\`\`sql
+LEFT JOIN cemeteries_plot ON cemeteries_intermentrecord.plot_id = cemeteries_plot.id
+  AND cemeteries_plot.deleted_at IS NULL AND cemeteries_plot.is_deleted = 0
+\`\`\`
+
+3. **Cemetery Name (RECOMMENDED)**: Join through plot to get cemetery name
+\`\`\`sql
+LEFT JOIN cemeteries_cemetery ON cemeteries_plot.cemetery_id = cemeteries_cemetery.id
+  AND cemeteries_cemetery.deleted = 0
+\`\`\`
+
+### Other Common Joins:
 
 Plot with Section:
 \`\`\`sql
@@ -106,27 +194,11 @@ Plot with Lot:
 LEFT JOIN cemeteries_lot ON cemeteries_plot.lot_link_id = cemeteries_lot.id
 \`\`\`
 
-Plot with Cemetery:
-\`\`\`sql
-LEFT JOIN cemeteries_cemetery ON cemeteries_plot.cemetery_id = cemeteries_cemetery.id
-\`\`\`
-
-Plot with Interments:
-\`\`\`sql
-LEFT JOIN cemeteries_intermentrecord ON cemeteries_plot.id = cemeteries_intermentrecord.plot_id
-\`\`\`
-
-Interment with Person:
-\`\`\`sql
-LEFT JOIN cemeteries_person ON cemeteries_intermentrecord.person_id = cemeteries_person.id 
-  AND cemeteries_person.deleted_at IS NULL
-\`\`\`
-
 Interment with Funeral Director:
 \`\`\`sql
 LEFT JOIN cemeteries_business AS funeral_director 
   ON cemeteries_intermentrecord.funeral_director_id = funeral_director.id 
-  AND funeral_director.deleted_at IS NULL
+  AND funeral_director.deleted_at IS NULL AND funeral_director.is_deleted = 0
 \`\`\`
 
 Person with Address:

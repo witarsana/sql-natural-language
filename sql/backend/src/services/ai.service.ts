@@ -1,6 +1,6 @@
 import { env } from "../config/env.config";
 import { logger } from "../utils/logger";
-import { AIError, AIResponse, UserRole } from "../models/query.model";
+import { AIError, AIResponse, UserRole, ChatMessage } from "../models/query.model";
 import { getSystemPrompt } from "../prompts/system-prompt";
 
 /**
@@ -27,9 +27,13 @@ export class AIService {
   }
 
   /**
-   * Generate SQL query from natural language question
+   * Generate SQL query from natural language question with conversation context
    */
-  async generateSQL(question: string, role?: UserRole): Promise<AIResponse> {
+  async generateSQL(
+    question: string,
+    role?: UserRole,
+    conversationHistory?: ChatMessage[]
+  ): Promise<AIResponse> {
     try {
       const effectiveRole = role || UserRole.ADMIN;
 
@@ -37,9 +41,30 @@ export class AIService {
         question,
         role: effectiveRole,
         model: this.model,
+        hasHistory: !!conversationHistory && conversationHistory.length > 0,
       });
 
       const systemPrompt = getSystemPrompt(effectiveRole);
+
+      // Build messages array with conversation history
+      const messages: any[] = [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+      ];
+
+      // Add conversation history if available (keep last 10 for context)
+      if (conversationHistory && conversationHistory.length > 0) {
+        const recentHistory = conversationHistory.slice(-10);
+        messages.push(...recentHistory);
+      }
+
+      // Add current question
+      messages.push({
+        role: "user",
+        content: question,
+      });
 
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: "POST",
@@ -51,16 +76,7 @@ export class AIService {
         },
         body: JSON.stringify({
           model: this.model,
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt,
-            },
-            {
-              role: "user",
-              content: question,
-            },
-          ],
+          messages: messages,
           temperature: 0.2,
           max_tokens: this.maxTokens,
         }),

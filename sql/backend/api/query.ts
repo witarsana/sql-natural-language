@@ -40,11 +40,12 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   try {
     // Parse request body
-    const { question, role, limit, offset } = req.body as {
+    const { question, role, limit, offset, conversationHistory } = req.body as {
       question?: string;
       role?: string;
       limit?: number;
       offset?: number;
+      conversationHistory?: { role: 'user' | 'assistant'; content: string }[];
     };
 
     if (!question || typeof question !== 'string') {
@@ -60,7 +61,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     console.log('Processing query:', { question, role: userRole });
 
     // Step 1: Validate query has sufficient context
-    const validation = validateQuery(question);
+    const validation = validateQuery(question, conversationHistory);
 
     if (!validation.isValid && validation.missingContext) {
       const clarificationPrompt = buildClarificationPrompt(validation.missingContext);
@@ -81,7 +82,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     }
 
     // Step 2: Generate SQL using AI
-    const aiResponse = await generateSQL(question, userRole);
+    const aiResponse = await generateSQL(question, userRole, conversationHistory);
 
     console.log('AI generated SQL:', aiResponse.sql);
 
